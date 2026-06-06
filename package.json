@@ -1,0 +1,23 @@
+{
+  "name": "consentstack",
+  "version": "0.1.0",
+  "description": "The Consent Stack — eyedby/consentstack",
+  "private": true,
+  "workspaces": [
+    "amok",
+    "4dnft"
+  ],
+  "scripts": {
+    "amok:test":      "cd amok && npm test",
+    "amok:deploy":    "cd amok && npm run deploy:testnet",
+    "4dnft:test":     "cd 4dnft && npx hardhat test",
+    "4dnft:deploy":   "cd 4dnft && npx hardhat run contracts/scripts/deploy.ts --network base-sepolia",
+    "circuit:build":  "cd amok && npm run circuit:build",
+    "circuit:test":   "cd amok && npm run circuit:test",
+    "site:open":      "open site/index.html"
+  },
+  "repository": {
+    "type": "git",
+    "url":  "https://github.com/eyedby/consentstack"
+  }
+}

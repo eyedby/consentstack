@@ -1,0 +1,35 @@
+name: Deploy to GoDaddy — The Consent Stack
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout eyedby/consentstack
+        uses: actions/checkout@v4
+
+      - name: Deploy via SSH to GoDaddy Aero
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host:     ${{ secrets.GODADDY_HOST }}
+          username: ${{ secrets.GODADDY_USER }}
+          password: ${{ secrets.GODADDY_PASS }}
+          port:     22
+          script: |
+            set -e
+            cd ~/consentstack 2>/dev/null || git clone https://github.com/eyedby/consentstack.git ~/consentstack
+            cd ~/consentstack
+            git fetch origin main
+            git reset --hard origin/main
+            mkdir -p ~/public_html/assets/img
+            cp site/index.html      ~/public_html/index.html
+            cp site/whitepaper.html ~/public_html/whitepaper.html
+            [ -f site/badge.svg ]      && cp site/badge.svg      ~/public_html/badge.svg
+            [ -f site/amok-badge.svg ] && cp site/amok-badge.svg ~/public_html/amok-badge.svg
+            [ -f amok/frontend/js/amok-client.js ] && cp amok/frontend/js/amok-client.js ~/public_html/assets/amok-client.js
+            echo "consentstack $(date -u +%Y-%m-%dT%H:%M:%SZ) $(git rev-parse --short HEAD)" > ~/public_html/version.txt
+            echo "✓ deployed"
