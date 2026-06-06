@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>The Consent Stack — White Paper</title>
+  <meta name="description" content="A white paper on the consolidation of aiOut, keepAIon, Δ9, AMOK, and 4DNFT into one consent-first ecosystem."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=Fraunces:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --ink:    #0D0D0D;
+      --paper:  #F5F2EC;
+      --cream:  #EDE8DE;
+      --mid:    #8A7F6E;
+      --faint:  #D4CEC2;
+      --red:    #C23B22;
+      --green:  #1D6E55;
+      --gold:   #8B6914;
+      --purple: #5B21B6;
+      --rule:   rgba(13,13,13,.12);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+
+    body {
+      font-family: 'Fraunces', Georgia, serif;
+      background: var(--paper);
+      color: var(--ink);
+      line-height: 1;
+      overflow-x: hidden;
+    }
+
+    /* ── NOISE TEXTURE ───────────────────────────────────────── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      opacity: .5;
+    }
+
+    /* ── COVER ───────────────────────────────────────────────── */
+    .cover {
+      min-height: 100vh;
+      display: flex; flex-direction: column; justify-content: flex-end;
+      padding: 0 0 4rem;
+      position: relative; overflow: hidden;
+      background: var(--ink);
+    }
+    .cover-bg {
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 70% 30%, #1a0a00 0%, transparent 60%),
+        radial-gradient(ellipse 60% 80% at 20% 80%, #001a0e 0%, transparent 60%),
+        var(--ink);
+    }
+    .cover-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+    .cover-eye {
+      position: absolute; top: -40px; right: -40px;
+      width: 420px; height: 420px; opacity: .06;
+    }
+    .cover-content { position: relative; z-index: 1; padding: 0 5vw; }
+    .cover-overline {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px; letter-spacing: .2em; text-transform: uppercase;
+      color: rgba(255,255,255,.35); margin-bottom: 2rem;
+    }
+    .cover-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(52px, 10vw, 120px);
+      color: #F5F2EC; line-height: .95; letter-spacing: -.02em;
+      margin-bottom: 1.5rem;
+    }
+    .cover-title em { color: #C23B22; font-style: italic; }
+    .cover-sub {
+      font-family: 'DM Mono', monospace;
+      font-size: 13px; color: rgba(255,255,255,.45);
+      letter-spacing: .05em; margin-bottom: 3rem;
+      max-width: 500px; line-height: 1.7;
+    }
+    .cover-meta {
+      display: flex; gap: 2rem; flex-wrap: wrap;
+      font-family: 'DM Mono', monospace; font-size: 11px;
+      color: rgba(255,255,255,.25); letter-spacing: .1em; text-transform: uppercase;
+    }
+    .cover-scroll {
+      position: absolute; bottom: 2rem; right: 5vw;
+      font-family: 'DM Mono', monospace; font-size: 10px;
+      color: rgba(255,255,255,.2); letter-spacing: .15em; text-transform: uppercase;
+      writing-mode: vertical-rl; transform: rotate(180deg);
+      animation: fadeup 2s ease-in-out infinite;
+    }
+    @keyframes fadeup { 0%,100%{opacity:.2} 50%{opacity:.5} }
+
+    /* ── NAV ─────────────────────────────────────────────────── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(245,242,236,.95); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--rule);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 5vw; height: 52px;
+    }
+    .nav-brand {
+      font-family: 'DM Mono', monospace;
+      font-size: 12px; letter-spacing: .1em; color: var(--mid);
+      text-decoration: none; text-transform: uppercase;
+    }
+    .nav-links { display: flex; gap: 1.5rem; }
+    .nav-links a {
+      font-family: 'DM Mono', monospace; font-size: 11px;
+      color: var(--mid); text-decoration: none; letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+    .nav-links a:hover { color: var(--ink); }
+    @media(max-width:540px){.nav-links{display:none}}
+
+    /* ── LAYOUT ──────────────────────────────────────────────── */
+    .page { position: relative; z-index: 1; }
+    .container { max-width: 780px; margin: 0 auto; padding: 0 5vw; }
+    .wide { max-width: 1100px; margin: 0 auto; padding: 0 5vw; }
+
+    /* ── SECTION HEADERS ─────────────────────────────────────── */
+    .chapter {
+      padding: 6rem 0 0;
+      border-top: 1px solid var(--rule);
+    }
+    .chapter-num {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px; letter-spacing: .2em; text-transform: uppercase;
+      color: var(--mid); margin-bottom: 1.25rem;
+      display: flex; align-items: center; gap: 1rem;
+    }
+    .chapter-num::after { content:''; flex:1; height:1px; background:var(--rule); }
+    .chapter-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(32px, 6vw, 56px);
+      line-height: 1.05; letter-spacing: -.015em;
+      margin-bottom: 2rem; color: var(--ink);
+    }
+    .chapter-title em { font-style: italic; color: var(--red); }
+
+    /* ── BODY TEXT ───────────────────────────────────────────── */
+    .body-text {
+      font-size: 17px; line-height: 1.8; color: #2A2A2A;
+      font-weight: 300; max-width: 640px;
+    }
+    .body-text + .body-text { margin-top: 1.25rem; }
+    .lead {
+      font-size: 21px; line-height: 1.65; color: var(--ink);
+      font-weight: 300; max-width: 640px; margin-bottom: 2rem;
+      font-style: italic;
+    }
+
+    /* ── SUB SECTIONS ────────────────────────────────────────── */
+    .subsec { padding: 3rem 0 0; }
+    .subsec-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 22px; margin-bottom: 1rem; color: var(--ink);
+    }
+
+    /* ── PULL QUOTE ──────────────────────────────────────────── */
+    .pullquote {
+      margin: 3rem 0;
+      padding: 2rem 2rem 2rem 2.5rem;
+      border-left: 3px solid var(--red);
+      background: var(--cream);
+    }
+    .pullquote p {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(18px, 3vw, 26px);
+      line-height: 1.4; color: var(--ink);
+      font-style: italic;
+    }
+    .pullquote cite {
+      display: block; margin-top: .75rem;
+      font-family: 'DM Mono', monospace;
+      font-size: 11px; color: var(--mid);
+      letter-spacing: .08em; font-style: normal; text-transform: uppercase;
+    }
+
+    /* ── LAYER CARDS ─────────────────────────────────────────── */
+    .layer-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1px; background: var(--faint);
+      margin: 3rem 0; border: 1px solid var(--faint);
+    }
+    .layer-card {
+      background: var(--paper); padding: 1.75rem 1.5rem;
+      transition: background .15s;
+    }
+    .layer-card:hover { background: var(--cream); }
+    .layer-domain {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
+      margin-bottom: .5rem;
+    }
+    .layer-name {
+      font-family: 'DM Serif Display', serif;
+      font-size: 20px; margin-bottom: .5rem; color: var(--ink);
+    }
+    .layer-desc { font-size: 13px; color: var(--mid); line-height: 1.6; font-family: 'DM Mono', monospace; }
+
+    /* ── ARCH DIAGRAM ────────────────────────────────────────── */
+    .arch {
+      background: var(--ink); color: #F5F2EC;
+      padding: 2.5rem; margin: 3rem 0;
+      font-family: 'DM Mono', monospace; font-size: 13px;
+      line-height: 1.9; overflow-x: auto;
+    }
+    .arch pre { color: rgba(245,242,236,.7); }
+    .arch .hl { color: #5DCAA5; }
+    .arch .hl2 { color: #C23B22; }
+    .arch .hl3 { color: #E8B830; }
+    .arch .hl4 { color: #A78BFA; }
+
+    /* ── TABLE ───────────────────────────────────────────────── */
+    .data-table {
+      width: 100%; border-collapse: collapse;
+      margin: 2rem 0; font-size: 14px;
+    }
+    .data-table th {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px; letter-spacing: .12em; text-transform: uppercase;
+      color: var(--mid); text-align: left;
+      padding: .75rem 1rem; border-bottom: 1px solid var(--faint);
+    }
+    .data-table td {
+      padding: .9rem 1rem; border-bottom: 1px solid var(--rule);
+      line-height: 1.5; font-size: 14px;
+    }
+    .data-table tr:hover td { background: var(--cream); }
+    .tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px; padding: 2px 8px; border-radius: 3px;
+      letter-spacing: .04em;
+    }
+    .tag-red    { background: #FEE2DC; color: var(--red); }
+    .tag-green  { background: #D1FAE5; color: var(--green); }
+    .tag-gold   { background: #FEF3C7; color: var(--gold); }
+    .tag-purple { background: #EDE9FE; color: var(--purple); }
+    .tag-dark   { background: #E5E7EB; color: #374151; }
+
+    /* ── FLOW ────────────────────────────────────────────────── */
+    .flow-block {
+      background: var(--cream); padding: 2rem;
+      margin: 2rem 0; border-left: 3px solid var(--faint);
+    }
+    .flow-title {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px; letter-spacing: .12em; text-transform: uppercase;
+      color: var(--mid); margin-bottom: 1.25rem;
+    }
+    .flow-steps { list-style: none; }
+    .flow-steps li {
+      display: flex; gap: 1rem; align-items: flex-start;
+      padding: .6rem 0; border-bottom: 1px solid var(--rule);
+      font-size: 14px; line-height: 1.6; color: #2A2A2A;
+    }
+    .flow-steps li:last-child { border-bottom: none; }
+    .step-num {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px; color: var(--mid);
+      min-width: 24px; padding-top: 3px;
+    }
+
+    /* ── ROADMAP ─────────────────────────────────────────────── */
+    .roadmap { margin: 2rem 0; }
+    .phase {
+      display: grid; grid-template-columns: 140px 1fr;
+      gap: 2rem; padding: 2rem 0;
+      border-top: 1px solid var(--rule);
+      align-items: start;
+    }
+    @media(max-width:600px){ .phase { grid-template-columns: 1fr; gap: .75rem; } }
+    .phase-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
+      color: var(--mid); padding-top: 3px;
+    }
+    .phase-items { list-style: none; }
+    .phase-items li {
+      font-size: 14px; line-height: 1.7; color: #2A2A2A;
+      padding: .2rem 0; display: flex; align-items: baseline; gap: .6rem;
+    }
+    .phase-items li::before {
+      content: '—'; font-family: 'DM Mono', monospace;
+      font-size: 11px; color: var(--faint); flex-shrink: 0;
+    }
+
+    /* ── COLOPHON ────────────────────────────────────────────── */
+    .colophon {
+      margin-top: 8rem; padding: 4rem 0 6rem;
+      border-top: 1px solid var(--rule);
+      display: grid; grid-template-columns: 1fr 1fr; gap: 3rem;
+    }
+    @media(max-width:600px){ .colophon { grid-template-columns: 1fr; } }
+    .colophon-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 32px; margin-bottom: 1rem; color: var(--ink); grid-column: 1/-1;
+    }
+    .colophon-block h4 {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px; letter-spacing: .12em; text-transform: uppercase;
+      color: var(--mid); margin-bottom: .75rem;
+    }
+    .colophon-block p, .colophon-block a {
+      font-size: 14px; line-height: 1.8; color: #2A2A2A;
+      text-decoration: none; display: block;
+    }
+    .colophon-block a:hover { color: var(--red); }
+
+    /* ── FOOTER ──────────────────────────────────────────────── */
+    footer {
+      background: var(--ink); color: rgba(255,255,255,.3);
+      padding: 2rem 5vw;
+      font-family: 'DM Mono', monospace; font-size: 11px;
+      letter-spacing: .08em; text-transform: uppercase;
+      display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
+    }
+    footer a { color: rgba(255,255,255,.4); text-decoration: none; }
+    footer a:hover { color: rgba(255,255,255,.7); }
+
+    /* ── ANIMATE IN ──────────────────────────────────────────── */
+    .reveal {
+      opacity: 0; transform: translateY(24px);
+      transition: opacity .7s ease, transform .7s ease;
+    }
+    .reveal.visible { opacity: 1; transform: none; }
+  </style>
+</head>
+<body>
+
+<!-- ── COVER ──────────────────────────────────────────────────── -->
+<div class="cover">
+  <div class="cover-bg"></div>
+  <div class="cover-grid"></div>
+  <svg class="cover-eye" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="80" cy="80" r="78" fill="none" stroke="white" stroke-width="1"/>
+    <ellipse cx="80" cy="80" rx="70" ry="44" fill="none" stroke="white" stroke-width="1"/>
+    <path d="M10 80 Q80 20 150 80 Q80 140 10 80Z" fill="none" stroke="white" stroke-width="1"/>
+    <ellipse cx="80" cy="80" rx="26" ry="26" fill="none" stroke="white" stroke-width="1"/>
+    <ellipse cx="80" cy="80" rx="8" ry="8" fill="white" opacity=".4"/>
+  </svg>
+  <div class="cover-content">
+    <p class="cover-overline">White Paper · Version 0.1 · June 2026</p>
+    <h1 class="cover-title">The<br>Consent<br><em>Stack</em></h1>
+    <p class="cover-sub">A consolidation of aiOut, keepAIon, Δ9, AMOK, and 4DNFT into one consent-first protocol ecosystem for AI rights, builder credentialing, and creative provenance.</p>
+    <div class="cover-meta">
+      <span>eyedby · keepaion</span>
+      <span>aiout.me</span>
+      <span>keepaion.com</span>
+      <span>4dnft.com</span>
+    </div>
+  </div>
+  <div class="cover-scroll">scroll</div>
+</div>
+
+<nav>
+  <a class="nav-brand" href="#">The Consent Stack</a>
+  <div class="nav-links">
+    <a href="#problem">Problem</a>
+    <a href="#stack">Stack</a>
+    <a href="#integration">Integration</a>
+    <a href="#roadmap">Roadmap</a>
+  </div>
+</nav>
+
+<div class="page">
+
+<!-- ── ABSTRACT ───────────────────────────────────────────────── -->
+<div style="background:var(--ink); padding:5rem 5vw;">
+  <div class="container">
+    <p style="font-family:'DM Mono',monospace; font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:rgba(255,255,255,.25); margin-bottom:1.5rem;">Abstract</p>
+    <p style="font-family:'DM Serif Display',serif; font-size:clamp(18px,3vw,26px); color:#F5F2EC; line-height:1.65; font-weight:300; font-style:italic; max-width:640px;">The internet is experiencing a consent crisis. AI systems process human data without permission. Builders have no verifiable credential for ethical practice. Creative work is shared without provenance. This white paper describes five interlocking layers that fix all three — simultaneously.</p>
+  </div>
+</div>
+
+<!-- ── LAYER OVERVIEW ─────────────────────────────────────────── -->
+<div class="wide" style="padding-top:4rem; padding-bottom:0;">
+  <div class="layer-grid reveal">
+    <div class="layer-card">
+      <div class="layer-domain" style="color:var(--red);">aiOut.me</div>
+      <div class="layer-name">Rights</div>
+      <div class="layer-desc">Public opt-out registry and legal record for AI consent</div>
+    </div>
+    <div class="layer-card">
+      <div class="layer-domain" style="color:var(--green);">keepAIon.com</div>
+      <div class="layer-name">Builders</div>
+      <div class="layer-desc">Developer pledge and ethical AI credential</div>
+    </div>
+    <div class="layer-card">
+      <div class="layer-domain" style="color:var(--green);">AMOK</div>
+      <div class="layer-name">Proof</div>
+      <div class="layer-desc">Zero-knowledge credential — proves without revealing</div>
+    </div>
+    <div class="layer-card">
+      <div class="layer-domain" style="color:var(--gold);">Δ9.com</div>
+      <div class="layer-name">Economy</div>
+      <div class="layer-desc">Utility token gating and ecosystem governance</div>
+    </div>
+    <div class="layer-card">
+      <div class="layer-domain" style="color:var(--purple);">4DNFT.com</div>
+      <div class="layer-name">Media</div>
+      <div class="layer-desc">On-chain artist play and share tracking</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── CHAPTER 1: PROBLEM ─────────────────────────────────────── -->
+<div class="container" id="problem">
+  <div class="chapter reveal">
+    <p class="chapter-num">Chapter 01</p>
+    <h2 class="chapter-title">The Problem<br><em>Space</em></h2>
+    <p class="lead">Four structural failures in how AI, identity, and creative work intersect on the modern internet.</p>
+  </div>
+
+  <div class="subsec reveal">
+    <h3 class="subsec-title">1.1 — AI without consent</h3>
+    <p class="body-text">AI systems are deployed against people without their knowledge or permission. Facial recognition identifies individuals in public spaces. Hiring algorithms screen candidates before a human reads their resume. Customer service bots process sensitive data under the guise of helpfulness.</p>
+    <p class="body-text" style="margin-top:1.25rem;">The absence of consent is not accidental. It is structural. Consent is friction. Friction reduces conversion. Businesses optimise for conversion. The result is a systematic erosion of the right to be left alone.</p>
+  </div>
+
+  <div class="pullquote reveal">
+    <p>"You should never be subjected to an AI system without your explicit permission."</p>
+    <cite>— aiOut.me founding principle</cite>
+  </div>
+
+  <div class="subsec reveal">
+    <h3 class="subsec-title">1.2 — Builders without credibility</h3>
+    <p class="body-text">Developers who want to build AI responsibly have no way to prove it. There is no credential for ethical AI development. A builder can write a blog post or publish a policy document — but neither is verifiable, portable, or privacy-preserving.</p>
+    <p class="body-text" style="margin-top:1.25rem;">Without a meaningful signal of ethical commitment, responsible builders are indistinguishable from irresponsible ones. The market cannot reward good behaviour it cannot see.</p>
+  </div>
+
+  <div class="subsec reveal">
+    <h3 class="subsec-title">1.3 — Identity without privacy</h3>
+    <p class="body-text">Existing identity systems force a binary choice: full exposure or full anonymity. A developer who wants to publicly commit to ethical AI must either reveal their identity or remain silent. There is no mechanism for saying "I signed this pledge" without revealing who signed it.</p>
+    <p class="body-text" style="margin-top:1.25rem;">Zero-knowledge proofs solve this mathematically. But they have not been applied to the problem of builder credentialing — until now.</p>
+  </div>
+
+  <div class="subsec reveal">
+    <h3 class="subsec-title">1.4 — Creative work without provenance</h3>
+    <p class="body-text">Music, art, and video are shared millions of times per day. The creator of a track rarely knows where it has been played, by whom, or how many times. Royalty systems are opaque, slow, and controlled by platforms with conflicting interests.</p>
+    <p class="body-text" style="margin-top:1.25rem;">NFTs promised to fix this but delivered speculation instead of provenance. The missing piece is not ownership — it is tracking. A living NFT that records every play and share on-chain, in real time.</p>
+  </div>
+</div>
+
+<!-- ── CHAPTER 2: THE STACK ───────────────────────────────────── -->
+<div style="background:var(--cream); padding:2rem 0; margin-top:5rem;">
+<div class="container" id="stack">
+  <div class="chapter reveal">
+    <p class="chapter-num">Chapter 02</p>
+    <h2 class="chapter-title">The Consent<br><em>Stack</em></h2>
+    <p class="lead">Five interlocking layers. Each independently useful. Together, the first complete infrastructure for consent-first participation in AI, web3, and digital media.</p>
+  </div>
+
+  <div class="arch reveal">
+    <pre>
+  User / Developer / Artist
+       │              │              │
+  <span class="hl2">aiOut.me</span>      <span class="hl">keepAIon.com</span>     <span class="hl4">4DNFT.com</span>
+  Rights layer  Builder layer    Media layer
+       │              │              │
+       └──────┬────────┘             │
+              │                      │
+          <span class="hl">AMOK ZKP</span> ◄────────────────┘
+          Proof layer
+              │
+          <span class="hl3">Δ9 Token</span>
+          Economy layer
+    </pre>
+  </div>
+
+  <div class="subsec reveal">
+    <h3 class="subsec-title">Layer 1 — aiOut.me · Rights</h3>
+    <p class="body-text">Individuals add their name to a public append-only registry asserting their right to opt out of AI processing. The registry creates a documented record of consent refusal that can be cited in legal proceedings, regulatory submissions, and policy advocacy.</p>
+    <p class="body-text" style="margin-top:1.25rem;">As AI regulation develops globally — the EU AI Act, proposed US federal frameworks, emerging APAC standards — a documented opt-out record provides standing for individuals and ammunition for advocates.</p>
+  </div>
+
+  <div class="subsec reveal">
+    <h3 class="subsec-title">Layer 2 — keepAIon.com · Builders</h3>
+    <p class="body-text">Developers sign a public pledge committing to transparency, consent, and accountability. The pledge is not a restriction — it is a positive assertion of values. keepAIon occupies the credible centre between AI panic and AI recklessness.</p>
+  </div>
+
+  <div class="pullquote reveal">
+    <p>"I commit to building AI tools with transparency, consent, and accountability. I keep AI on — and I build it right."</p>
+    <cite>— keepAIon pledge</cite>
+  </div>
+
+  <div class="subsec reveal">
+    <h3 class="subsec-title">Layer 3 — AMOK · Zero-Knowledge Proof</h3>
+    <p class="body-text">AMOK (Autonomous Movement Of Knowledge) uses a Noir ZK circuit to generate a verifiable credential without revealing the holder's identity. The proof asserts: "I signed the keepAIon pledge" — without revealing who signed it.</p>
+
+    <div style="background:var(--ink); padding:1.5rem 2rem; margin:1.5rem 0; font-family:'DM Mono',monospace; font-size:12px; line-height:2; color:rgba(245,242,236,.6);">
+      <div style="color:rgba(245,242,236,.3); margin-bottom:.5rem;">// Circuit inputs</div>
+      <div>Private: <span style="color:#5DCAA5;">secret, github_handle_hash</span></div>
+      <div>Public:  <span style="color:#5DCAA5;">commitment, nullifier, pledge_root</span></div>
+      <div style="margin-top:.5rem; color:rgba(245,242,236,.3);">// Proof: knowledge of secret such that</div>
+      <div style="color:rgba(245,242,236,.3);">// commitment ∈ pledge_tree ∧ nullifier = pedersen(secret, 0)</div>
+    </div>
+
+    <p class="body-text">AMOK credentials require the holder to maintain a minimum Δ9 balance on Solana. This creates ongoing economic alignment — the credential stays active as long as the holder participates in the ecosystem economy. Soulbound ERC-721 on Base. Non-transferable.</p>
+  </div>
+
+  <div class="subsec reveal">
+    <h3 class="subsec-title">Layer 4 — Δ9 · Economy</h3>
+    <p class="body-text">Solana SPL utility token providing economic incentives and governance across the stack. No burn mechanics — Δ9 is a participation signal. Holding is sufficient for base access. Governance weight proportional to holding duration.</p>
+
+    <table class="data-table" style="margin-top:1.5rem;">
+      <thead><tr><th>Function</th><th>Mechanism</th></tr></thead>
+      <tbody>
+        <tr><td>AMOK subscription</td><td>Hold minimum Δ9 → credential stays active</td></tr>
+        <tr><td>Governance</td><td>Vote on aiOut legal strategy, keepAIon pledge updates</td></tr>
+        <tr><td>4DNFT premium</td><td>Δ9 holders unlock advanced analytics + royalty splits</td></tr>
+        <tr><td>Payments</td><td>Pay for premium features across all domains</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="subsec reveal">
+    <h3 class="subsec-title">Layer 5 — 4DNFT.com · Media</h3>
+    <p class="body-text">Traditional NFTs capture three dimensions of creative work: ownership, authenticity, scarcity. 4DNFT adds the fourth dimension — <em>provenance over time</em>. Every play and share recorded on-chain as an immutable event.</p>
+    <p class="body-text" style="margin-top:1.25rem;">ERC-1155 on Base. ERC-2981 royalty splits wired in. Listener and sharer identities are hashed before recording — the chain knows a play happened, not who played it. Consent by design, consistent with the aiOut framework.</p>
+  </div>
+</div>
+</div>
+
+<!-- ── CHAPTER 3: INTEGRATION ─────────────────────────────────── -->
+<div class="container" id="integration">
+  <div class="chapter reveal">
+    <p class="chapter-num">Chapter 03</p>
+    <h2 class="chapter-title">Integration<br><em>Architecture</em></h2>
+  </div>
+
+  <div class="flow-block reveal">
+    <p class="flow-title">Flow A — Developer signs pledge</p>
+    <ol class="flow-steps">
+      <li><span class="step-num">01</span>Developer visits keepAIon.com, enters GitHub handle + passphrase</li>
+      <li><span class="step-num">02</span>AMOK generates ZKP in browser — private inputs never leave the device</li>
+      <li><span class="step-num">03</span>Commitment registered on Base — no identity revealed</li>
+      <li><span class="step-num">04</span>ZK proof submitted → AMOK soulbound token minted</li>
+      <li><span class="step-num">05</span>Developer holds Δ9 on Solana to keep credential active</li>
+      <li><span class="step-num">06</span>Badge embeds in GitHub README with verifiable on-chain link</li>
+    </ol>
+  </div>
+
+  <div class="flow-block reveal">
+    <p class="flow-title">Flow B — Artist mints offering</p>
+    <ol class="flow-steps">
+      <li><span class="step-num">01</span>Artist visits 4DNFT.com, connects wallet, uploads media to IPFS</li>
+      <li><span class="step-num">02</span>Calls mintOffering() — title, type, IPFS hash, royalty config</li>
+      <li><span class="step-num">03</span>If artist holds valid AMOK token → amokVerified = true in metadata</li>
+      <li><span class="step-num">04</span>Offering minted as ERC-1155 on Base</li>
+      <li><span class="step-num">05</span>Platform integrations begin recording plays and shares on-chain</li>
+      <li><span class="step-num">06</span>ERC-2981 royalties flow on every secondary sale</li>
+    </ol>
+  </div>
+
+  <div class="flow-block reveal">
+    <p class="flow-title">Flow C — Domain routing</p>
+    <ol class="flow-steps">
+      <li><span class="step-num">01</span>All five domains point to one hosted file on GoDaddy Aero</li>
+      <li><span class="step-num">02</span>index.html detects window.location.hostname on load</li>
+      <li><span class="step-num">03</span>aiout.me → red/black rights theme</li>
+      <li><span class="step-num">04</span>keepaion.com → green builder theme + AMOK pledge flow</li>
+      <li><span class="step-num">05</span>delta9.com → gold token theme</li>
+      <li><span class="step-num">06</span>4dnft.com → purple media/artist theme</li>
+    </ol>
+  </div>
+
+  <div class="subsec reveal">
+    <h3 class="subsec-title">Technical stack</h3>
+    <table class="data-table">
+      <thead><tr><th>Component</th><th>Technology</th><th>Layer</th></tr></thead>
+      <tbody>
+        <tr><td>ZK circuit</td><td>Noir >= 0.30 · Barretenberg</td><td><span class="tag tag-green">AMOK</span></td></tr>
+        <tr><td>AMOK contract</td><td>Solidity 0.8.20 · Base</td><td><span class="tag tag-green">AMOK</span></td></tr>
+        <tr><td>4DNFT contract</td><td>ERC-1155 · ERC-2981 · Base</td><td><span class="tag tag-purple">4DNFT</span></td></tr>
+        <tr><td>Δ9 token</td><td>SPL Token Program · Solana</td><td><span class="tag tag-gold">Δ9</span></td></tr>
+        <tr><td>Cross-chain oracle</td><td>Pyth / Wormhole</td><td><span class="tag tag-gold">Δ9</span></td></tr>
+        <tr><td>Frontend</td><td>Vanilla JS · DM Mono · GoDaddy Aero</td><td><span class="tag tag-dark">All</span></td></tr>
+        <tr><td>Deploy</td><td>GitHub Actions → cPanel SSH</td><td><span class="tag tag-dark">All</span></td></tr>
+        <tr><td>Repo</td><td>eyedby/keepaion</td><td><span class="tag tag-dark">All</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ── CHAPTER 4: ROADMAP ─────────────────────────────────────── -->
+<div style="background:var(--cream); padding:2rem 0; margin-top:5rem;">
+<div class="container" id="roadmap">
+  <div class="chapter reveal">
+    <p class="chapter-num">Chapter 04</p>
+    <h2 class="chapter-title">Roadmap</h2>
+  </div>
+
+  <div class="roadmap reveal">
+    <div class="phase">
+      <div class="phase-label">Phase 1<br>Now</div>
+      <ul class="phase-items">
+        <li>aiOut.me live with opt-out registry</li>
+        <li>keepAIon.com live with AMOK pledge flow</li>
+        <li>Unified index.html across all domains</li>
+        <li>eyedby/keepaion repo clean and structured</li>
+        <li>GitHub Actions → GoDaddy auto-deploy</li>
+      </ul>
+    </div>
+    <div class="phase">
+      <div class="phase-label">Phase 2<br>Q3 2026</div>
+      <ul class="phase-items">
+        <li>AMOK contract deployed to Base Sepolia</li>
+        <li>UltraVerifier generated from Noir circuit</li>
+        <li>AMOK soulbound tokens minting on testnet</li>
+        <li>Δ9 SPL token deployed on Solana devnet</li>
+      </ul>
+    </div>
+    <div class="phase">
+      <div class="phase-label">Phase 3<br>Q4 2026</div>
+      <ul class="phase-items">
+        <li>4DNFT contract deployed to Base</li>
+        <li>Artist onboarding flow live at 4DNFT.com</li>
+        <li>Platform integrations for play/share recording</li>
+        <li>ERC-2981 royalty splits active</li>
+      </ul>
+    </div>
+    <div class="phase">
+      <div class="phase-label">Phase 4<br>Q1 2027</div>
+      <ul class="phase-items">
+        <li>Δ9 mainnet launch on Solana</li>
+        <li>AMOK subscription model live</li>
+        <li>Cross-chain oracle for Solana ↔ Base</li>
+        <li>Governance module live</li>
+      </ul>
+    </div>
+    <div class="phase">
+      <div class="phase-label">Phase 5<br>2027</div>
+      <ul class="phase-items">
+        <li>aiOut legal filings — EU, US, AU jurisdictions</li>
+        <li>keepAIon developer directory with verifiable badges</li>
+        <li>4DNFT streaming platform integrations at scale</li>
+        <li>Δ9 governance controlling treasury and protocol</li>
+      </ul>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ── COLOPHON ────────────────────────────────────────────────── -->
+<div class="container">
+  <div class="colophon reveal">
+    <h2 class="colophon-title">Contact &amp; Links</h2>
+    <div class="colophon-block">
+      <h4>Domains</h4>
+      <a href="https://aiout.me">aiout.me</a>
+      <a href="https://keepaion.com">keepaion.com</a>
+      <a href="https://4dnft.com">4dnft.com</a>
+    </div>
+    <div class="colophon-block">
+      <h4>Code &amp; Community</h4>
+      <a href="https://github.com/eyedby/keepaion">github.com/eyedby/keepaion</a>
+      <a href="https://x.com/keepaion">𝕏 @keepaion</a>
+    </div>
+    <div class="colophon-block">
+      <h4>Document</h4>
+      <p>Version 0.1 · June 2026</p>
+      <p>building by builders</p>
+      <p>we thought this through</p>
+    </div>
+  </div>
+</div>
+
+</div><!-- end .page -->
+
+<footer>
+  <span>The Consent Stack · White Paper v0.1 · June 2026</span>
+  <span>
+    <a href="https://aiout.me">aiout.me</a> &nbsp;·&nbsp;
+    <a href="https://keepaion.com">keepaion.com</a> &nbsp;·&nbsp;
+    <a href="https://4dnft.com">4dnft.com</a>
+  </span>
+</footer>
+
+<script>
+// Scroll reveal
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+}, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
