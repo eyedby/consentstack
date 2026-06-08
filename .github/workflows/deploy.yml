@@ -12,12 +12,12 @@ jobs:
       - name: Checkout eyedby/consentstack
         uses: actions/checkout@v4
 
-      - name: Deploy via SSH to GoDaddy Aero
+      - name: Deploy via SSH to GoDaddy
         uses: appleboy/ssh-action@v1.0.3
         with:
           host:     ${{ secrets.GODADDY_HOST }}
           username: ${{ secrets.GODADDY_USER }}
-          password: ${{ secrets.GODADDY_PASS }}
+          key:      ${{ secrets.GODADDY_KEY }}
           port:     22
           script: |
             set -e
@@ -25,11 +25,11 @@ jobs:
             cd ~/consentstack
             git fetch origin main
             git reset --hard origin/main
-            ~/public_html/keepaion.com/assets/img
+            mkdir -p ~/public_html/keepaion.com/assets/img
             cp site/index.html      ~/public_html/keepaion.com/index.html
             cp site/whitepaper.html ~/public_html/keepaion.com/whitepaper.html
             [ -f site/badge.svg ]      && cp site/badge.svg      ~/public_html/keepaion.com/badge.svg
             [ -f site/amok-badge.svg ] && cp site/amok-badge.svg ~/public_html/keepaion.com/amok-badge.svg
             [ -f amok/frontend/js/amok-client.js ] && cp amok/frontend/js/amok-client.js ~/public_html/keepaion.com/assets/amok-client.js
             echo "consentstack $(date -u +%Y-%m-%dT%H:%M:%SZ) $(git rev-parse --short HEAD)" > ~/public_html/keepaion.com/version.txt
-            echo "✓ deployed"
+            echo "deployed"
