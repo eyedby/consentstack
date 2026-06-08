@@ -25,9 +25,9 @@ jobs:
             cd ~/consentstack
             git fetch origin main
             git reset --hard origin/main
-            mkdir -p ~/public_html/keepaion.com/keepaion.com/assets/img
-            cp site/index.html      ~/public_html/keepaion.com/keepaion.com/index.html
-            cp site/whitepaper.html ~/public_html/keepaion.com/keepaion.com/whitepaper.html
+            ~/public_html/keepaion.com/assets/img
+            cp site/index.html      ~/public_html/keepaion.com/index.html
+            cp site/whitepaper.html ~/public_html/keepaion.com/whitepaper.html
             [ -f site/badge.svg ]      && cp site/badge.svg      ~/public_html/keepaion.com/badge.svg
             [ -f site/amok-badge.svg ] && cp site/amok-badge.svg ~/public_html/keepaion.com/amok-badge.svg
             [ -f amok/frontend/js/amok-client.js ] && cp amok/frontend/js/amok-client.js ~/public_html/keepaion.com/assets/amok-client.js
