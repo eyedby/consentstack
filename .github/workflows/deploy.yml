@@ -17,7 +17,7 @@ jobs:
         with:
           host:     ${{ secrets.GODADDY_HOST }}
           username: ${{ secrets.GODADDY_USER }}
-          password: ${{ secrets.GODADDY_PASS }}
+          key:      ${{ secrets.GODADDY_KEY }}
           port:     22
           script: |
             set -e
