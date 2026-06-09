@@ -1,0 +1,8 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/ju9mvqk9ihhi/public_html
+    - /bin/cp site/index.html      $DEPLOYPATH/index.html
+    - /bin/mkdir -p $DEPLOYPATH/keepaion.org
+    - /bin/cp site/contact.html    $DEPLOYPATH/keepaion.org/index.html
+    - echo "deployed $(date -u +%Y-%m-%dT%H:%M:%SZ)" > $DEPLOYPATH/version.txt
