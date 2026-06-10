@@ -1,17 +1,14 @@
 name: Deploy to GoDaddy — The Consent Stack
-
 on:
   push:
     branches: [main]
   workflow_dispatch:
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout eyedby/consentstack
         uses: actions/checkout@v4
-
       - name: Deploy via SSH to GoDaddy
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -21,8 +18,8 @@ jobs:
           port:     22
           script: |
             set -e
-            cd ~/consentstack 2>/dev/null || git clone https://github.com/eyedby/consentstack.git ~/consentstack
-            cd ~/consentstack
+            cd ~/repositories/consentstack 2>/dev/null || git clone https://github.com/eyedby/consentstack.git ~/repositories/consentstack
+            cd ~/repositories/consentstack
             git fetch origin main
             git reset --hard origin/main
             mkdir -p ~/public_html/assets/img
