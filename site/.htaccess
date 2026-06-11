@@ -1,0 +1,74 @@
+# ============================================================
+# keepAIon.com — .htaccess
+# Consent Stack · No trackers. No ads. No exceptions.
+# ============================================================
+
+# ── Force HTTPS ──────────────────────────────────────────────
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteCond %{HTTPS} off
+  RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+</IfModule>
+
+# ── Security & Privacy Headers ───────────────────────────────
+<IfModule mod_headers.c>
+
+  # Content Security Policy — blocks all ad networks and trackers
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://fonts.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.mainnet-beta.solana.com https://phantom.app; frame-ancestors 'none'; form-action 'self'; block-all-mixed-content; upgrade-insecure-requests"
+
+  # Never leak visitor URLs to third parties
+  Header always set Referrer-Policy "no-referrer"
+
+  # Disable tracking-prone browser features
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), interest-cohort=(), browsing-topics=(), ad-interest-groups=(), attribution-reporting=(), join-ad-interest-group=(), run-ad-auction=()"
+
+  # Standard security headers
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "DENY"
+  Header always set X-XSS-Protection "1; mode=block"
+  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+
+  # Explicitly block ad/tracker domains
+  Header always set Content-Security-Policy-Report-Only "default-src 'self'; img-src 'self'; script-src 'self'"
+
+</IfModule>
+
+# ── Block known ad/tracker referers ─────────────────────────
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  RewriteCond %{HTTP_REFERER} 360yield\.com [NC,OR]
+  RewriteCond %{HTTP_REFERER} 3lift\.com [NC,OR]
+  RewriteCond %{HTTP_REFERER} adnxs\.com [NC,OR]
+  RewriteCond %{HTTP_REFERER} casalemedia\.com [NC,OR]
+  RewriteCond %{HTTP_REFERER} company-target\.com [NC,OR]
+  RewriteCond %{HTTP_REFERER} deepintent\.com [NC,OR]
+  RewriteCond %{HTTP_REFERER} dotomi\.com [NC,OR]
+  RewriteCond %{HTTP_REFERER} inmobi\.com [NC,OR]
+  RewriteCond %{HTTP_REFERER} liadm\.com [NC,OR]
+  RewriteCond %{HTTP_REFERER} pubmatic\.com [NC,OR]
+  RewriteCond %{HTTP_REFERER} quantserve\.com [NC,OR]
+  RewriteCond %{HTTP_REFERER} rubiconproject\.com [NC,OR]
+  RewriteCond %{HTTP_REFERER} sharethrough\.com [NC,OR]
+  RewriteCond %{HTTP_REFERER} smartadserver\.com [NC,OR]
+  RewriteCond %{HTTP_REFERER} stackadapt\.com [NC,OR]
+  RewriteCond %{HTTP_REFERER} yieldmo\.com [NC,OR]
+  RewriteCond %{HTTP_REFERER} piano\.io [NC,OR]
+  RewriteCond %{HTTP_REFERER} loopme\.me [NC,OR]
+  RewriteCond %{HTTP_REFERER} bidswitch\.net [NC,OR]
+  RewriteCond %{HTTP_REFERER} media\.net [NC,OR]
+  RewriteCond %{HTTP_REFERER} adsrvr\.org [NC]
+  RewriteRule .* - [F,L]
+
+</IfModule>
+
+# ── Cache static assets ──────────────────────────────────────
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/css "access plus 1 month"
+  ExpiresByType application/javascript "access plus 1 month"
+  ExpiresByType image/svg+xml "access plus 1 month"
+  ExpiresByType image/png "access plus 1 month"
+  ExpiresByType image/jpeg "access plus 1 month"
+  ExpiresByType text/html "access plus 1 hour"
+</IfModule>
