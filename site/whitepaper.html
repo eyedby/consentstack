@@ -142,6 +142,7 @@
       <li><a href="#principles">Four Principles</a></li>
       <li><a href="#architecture">System Architecture</a></li>
       <li><a href="#amok">AMOK — Zero-Knowledge Identity</a></li>
+      <li><a href="#amok-primitive">AMOK as the Unifying Primitive</a></li>
       <li><a href="#delta9">Δ9 — The Utility Token</a></li>
       <li><a href="#4dnft">4DNFT — Provenance Over Time</a></li>
       <li><a href="#roadmap">Roadmap</a></li>
@@ -219,8 +220,33 @@
     </div>
   </div>
 
-  <div class="section" id="delta9">
+  <div class="section" id="amok-primitive">
     <div class="section-num">06 —</div>
+    <h2>AMOK as the unifying primitive</h2>
+    <p class="lead">AMOK answers one question: is this a real, unique, pledged participant? Everything else in the Consent Stack is just a different action attached to that same answer.</p>
+    <p>Three use cases share the identical underlying proof:</p>
+    <div class="principles">
+      <div class="principle">
+        <div class="principle-num">Pledge signing</div>
+        <div class="principle-title">aiOut registry</div>
+        <p>AMOK proves a person signed the pledge — added to the public, append-only record — without revealing who they are.</p>
+      </div>
+      <div class="principle">
+        <div class="principle-num">Governance voting</div>
+        <div class="principle-title">Δ9 signal</div>
+        <p>AMOK proves a vote came from a real pledged holder, weighted by Δ9 stake, contributing to the aggregate civic signal described in the next section.</p>
+      </div>
+      <div class="principle">
+        <div class="principle-num">Contribution proof</div>
+        <div class="principle-title">keepAIon development</div>
+        <p>AMOK proves a code contribution came from a real pledged builder — the same identity primitive extended to recognize and reward the people building the stack itself.</p>
+      </div>
+    </div>
+    <p>This last use case — contribution proof — is the least developed and will evolve as keepAIon grows. The early concept: a contributor signs work with an AMOK-linked credential, a merged pull request triggers verification, and a small Δ9 reward flows to their staking wallet. "Building by builders" becomes economically literal, not just a slogan — while keeping the same anonymity guarantees as every other AMOK action. The mechanism for Sybil-resistance and quality review on this path is still being designed.</p>
+  </div>
+
+  <div class="section" id="delta9">
+    <div class="section-num">07 —</div>
     <h2>Δ9 — The Utility Token</h2>
     <p>Δ9 is a Solana SPL token that serves as the economic backbone of the Consent Stack. It is not a speculative asset — it is a utility instrument. Holding Δ9 is how participation in the consent ecosystem is maintained and measured.</p>
     <div class="token-grid">
@@ -241,34 +267,42 @@
         <div class="token-value">Devnet</div>
       </div>
     </div>
+    <h3>The power of many, signed by none</h3>
+    <p class="lead">A single voice can be ignored. Ten thousand cryptographically-verified voices, none of which can be individually identified or punished, cannot be dismissed as easily.</p>
+    <p>That is the actual function of Δ9 governance. Every staked token contributes weight to a position. Every vote is backed by an AMOK zero-knowledge proof — confirming the voter holds a real, unique, pledged credential, without revealing who that person is. The result is a number: how many verified stakeholders, weighted by stake, support a given position on AI consent policy.</p>
+    <div class="callout">
+      <p>One employee's dissent can cost them their job. Ten thousand anonymous, provable dissents become a dataset — one that advocacy groups, journalists, and policymakers can cite directly.</p>
+    </div>
+    <p>This is not a claim that Δ9 plugs directly into EU rulemaking, national legislatures, or corporate policy. There is no official channel that ingests on-chain votes. What Δ9 produces is something regulators and advocacy organizations currently lack: a timestamped, tamper-evident, Sybil-resistant record of where a real population of stakeholders stands — usable as evidence in public comment periods, submissions to the EU AI Office, shareholder proposals, or press coverage. The proof is the product. What anyone does with that proof is up to them.</p>
+
     <h3>Tier Structure</h3>
     <p>Staking Δ9 unlocks progressively deeper access to the consent stack. Tiers are evaluated continuously — stake more to upgrade, drop below threshold to downgrade.</p>
     <div class="principles">
       <div class="principle">
         <div class="principle-num" style="color:#888780">Signal — 100 Δ9</div>
         <div class="principle-title">AMOK credential + aiOut badge</div>
-        <p>Entry level. Credential stays active. Standard rewards. Public pledge badge.</p>
+        <p>Entry level. Credential stays active. Standard rewards. Public pledge badge. Counted in the aggregate signal.</p>
       </div>
       <div class="principle">
         <div class="principle-num" style="color:#7F77DD">Verify — 500 Δ9</div>
         <div class="principle-title">Governance voting + early 4DNFT access</div>
-        <p>Vote on pledge versions and keepAIon parameters. 1.25× reward boost.</p>
+        <p>Vote on pledge versions and keepAIon parameters. 1.25× reward boost. 1.25× signal weight.</p>
       </div>
       <div class="principle">
         <div class="principle-num" style="color:#1D9E75">Delta — 2,000 Δ9</div>
         <div class="principle-title">Full governance + 4DNFT analytics</div>
-        <p>Full governance weight. Vote on legal strategy and royalty parameters. 2× rewards.</p>
+        <p>Full governance weight. Vote on legal strategy and royalty parameters. 2× rewards. 2× signal weight.</p>
       </div>
       <div class="principle">
         <div class="principle-num" style="color:#D85A30">Consent — 10,000 Δ9</div>
         <div class="principle-title">DAO board + royalty splits + exclusive drops</div>
-        <p>Maximum governance power. Automatic ERC-2981 royalty routing. 3× rewards.</p>
+        <p>Maximum governance power. Automatic ERC-2981 royalty routing. 3× rewards. 3× signal weight.</p>
       </div>
     </div>
   </div>
 
   <div class="section" id="4dnft">
-    <div class="section-num">07 —</div>
+    <div class="section-num">08 —</div>
     <h2>4DNFT — Provenance Over Time</h2>
     <p>Traditional NFTs capture a moment — who owns what, right now. 4DNFT captures the journey. Every stream mints a provenance event. Every share is recorded. Attribution follows the work everywhere it goes, forever.</p>
     <p>4DNFT is built on ERC-1155 on Base with ERC-2981 royalty routing. The consent framework is built in — listeners opt in, artists control their catalogue, and Δ9 stakers receive automatic royalty splits on every secondary sale.</p>
@@ -293,7 +327,7 @@
   </div>
 
   <div class="section" id="roadmap">
-    <div class="section-num">08 —</div>
+    <div class="section-num">09 —</div>
     <h2>Roadmap</h2>
     <div class="phases">
       <div class="phase">
@@ -328,7 +362,7 @@
   </div>
 
   <div class="section" id="conclusion">
-    <div class="section-num">09 —</div>
+    <div class="section-num">10 —</div>
     <h2>Conclusion</h2>
     <p class="lead">The Consent Stack is not a product. It is infrastructure for a rights movement.</p>
     <p>The tools exist to build a world where AI participation is always chosen, never assumed. Where creative provenance is immutable. Where identity can be verified without being exposed. The Consent Stack assembles those tools into a coherent, working system.</p>
