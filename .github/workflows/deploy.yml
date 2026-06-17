@@ -1,14 +1,17 @@
 name: Deploy to GoDaddy — The Consent Stack
+
 on:
   push:
     branches: [main]
   workflow_dispatch:
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout eyedby/consentstack
         uses: actions/checkout@v4
+
       - name: Deploy via SSH to GoDaddy
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -18,17 +21,581 @@ jobs:
           port:     22
           script: |
             set -e
-            cd ~/repositories/consentstack 2>/dev/null || git clone https://github.com/eyedby/consentstack.git ~/repositories/consentstack
-            cd ~/repositories/consentstack
+            cd ~/consentstack 2>/dev/null || git clone https://github.com/eyedby/consentstack.git ~/consentstack
+            cd ~/consentstack
             git fetch origin main
             git reset --hard origin/main
-            mkdir -p ~/public_html/assets/img
-            cp site/index.html      ~/public_html/index.html
-            cp site/whitepaper.html ~/public_html/whitepaper.html
-            [ -f site/badge.svg ]      && cp site/badge.svg      ~/public_html/badge.svg
-            [ -f site/amok-badge.svg ] && cp site/amok-badge.svg ~/public_html/amok-badge.svg
-            [ -f amok/frontend/js/amok-client.js ] && cp amok/frontend/js/amok-client.js ~/public_html/assets/amok-client.js
-            mkdir -p ~/public_html/keepaion.org
-            cp site/contact.html ~/public_html/keepaion.org/index.html
-            echo "consentstack $(date -u +%Y-%m-%dT%H:%M:%SZ) $(git rev-parse --short HEAD)" > ~/public_html/version.txt
-            echo "deployed"
+            mkdir -p ~/public_html/keepaion.com/assets/img
+            cp site/index.html      ~/public_html/keepaion.com/index.html
+            cp site/whitepaper.html ~/public_html/keepaion.com/whitepaper.html
+            [ -f site/badge.svg ]      && cp site/badge.svg      ~/public_html/keepaion.com/badge.svg
+            [ -f site/amok-badge.svg ] && cp site/amok-badge.svg ~/public_html/keepaion.com/amok-badge.svg
+            [ -f amok/frontend/js/amok-client.js ] && cp amok/frontend/js/amok-client.js ~/public_html/keepaion.com/assets/amok-client.js
+            echo "consentstack $(date -u +%Y-%m-%dT%H:%M:%SZ) $(git rev-parse --short HEAD)" > ~/public_html/keepaion.com/version.txt
+            echo "deployed"<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>aiOut — your consent. your right.</title>
+  <meta name="description" content="You should never be subjected to an AI system without your explicit permission."/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body.theme-aiout    { --bg:#0C0C0C; --bg2:#1a0505; --bg3:#110303; --ac:#D85A30; --li:#F0997B; --pa:#FAECE7; --mi:#993C1D; --di:#4A1B0C; --nv:rgba(12,12,12,.93); }
+    body.theme-keepaion { --bg:#020f0a; --bg2:#04342C; --bg3:#010a07; --ac:#1D9E75; --li:#5DCAA5; --pa:#9FE1CB; --mi:#0F6E56; --di:#04342C; --nv:rgba(2,15,10,.93); }
+    body.theme-delta9   { --bg:#0D0A00; --bg2:#1a1200; --bg3:#090700; --ac:#B8860B; --li:#E8B830; --pa:#FFF3C4; --mi:#8B6914; --di:#412402; --nv:rgba(13,10,0,.93); }
+    body.theme-4dnft    { --bg:#06020F; --bg2:#130A2A; --bg3:#080212; --ac:#8B5CF6; --li:#A78BFA; --pa:#EDE9FE; --mi:#5B21B6; --di:#2E1065; --nv:rgba(6,2,15,.93); }
+
+    body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--pa); min-height:100vh; }
+
+    /* NAV */
+    nav { position:fixed; top:0; left:0; right:0; z-index:100; background:var(--nv); backdrop-filter:blur(14px); border-bottom:.5px solid var(--mi); height:56px; display:flex; align-items:center; justify-content:space-between; padding:0 1.5rem; }
+    #nav-logo { font-size:18px; font-weight:500; color:var(--pa); letter-spacing:-.02em; text-decoration:none; }
+    #nav-logo em { color:var(--li); font-style:normal; }
+    .nl { display:flex; gap:1.25rem; align-items:center; }
+    .nl a { font-size:12px; color:var(--li); text-decoration:none; }
+    .nl a:hover { color:var(--pa); }
+    .ncta { background:var(--ac)!important; color:#fff!important; border-radius:6px; padding:7px 16px; font-size:13px; font-weight:500; text-decoration:none; }
+    @media(max-width:540px){.nl{display:none}}
+
+    /* HERO */
+    .hero { min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:7rem 1.5rem 4rem; position:relative; overflow:hidden; }
+    .glow { position:absolute; top:40%; left:50%; transform:translate(-50%,-50%); width:600px; height:280px; background:radial-gradient(ellipse,var(--ac) 0%,transparent 70%); opacity:.07; pointer-events:none; }
+    .pill { display:inline-block; font-size:11px; font-family:'IBM Plex Mono',monospace; background:var(--bg2); color:var(--li); border:.5px solid var(--mi); border-radius:20px; padding:3px 14px; margin-bottom:1.25rem; letter-spacing:.05em; }
+    .hero h1 { font-size:clamp(48px,11vw,92px); font-weight:500; color:var(--pa); letter-spacing:-.03em; line-height:1; margin-bottom:1.1rem; }
+    .hero h1 em { color:var(--li); font-style:normal; }
+    .hero > p { font-size:clamp(14px,2vw,17px); color:var(--li); line-height:1.75; max-width:500px; margin:0 auto 2.25rem; }
+    .hbtns { display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-bottom:2.75rem; }
+    .bp { background:var(--ac); color:#fff; border:none; border-radius:8px; padding:13px 26px; font-size:15px; font-weight:500; cursor:pointer; font-family:'Inter',sans-serif; text-decoration:none; }
+    .bp:hover { opacity:.88; }
+    .bo { background:none; color:var(--li); border:.5px solid var(--mi); border-radius:8px; padding:12px 22px; font-size:15px; cursor:pointer; font-family:'Inter',sans-serif; text-decoration:none; }
+    .bo:hover { border-color:var(--ac); color:var(--pa); }
+    .stats { display:flex; gap:2.5rem; justify-content:center; flex-wrap:wrap; }
+    .sn { font-size:30px; font-weight:500; color:var(--ac); }
+    .sl { font-size:11px; color:var(--mi); letter-spacing:.04em; margin-top:2px; }
+
+    /* ECO BAR */
+    .eco { background:var(--bg2); border-top:.5px solid var(--mi); border-bottom:.5px solid var(--mi); display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); }
+    .eco-item { padding:1.5rem 1rem; text-align:center; border-right:.5px solid var(--mi); cursor:pointer; transition:background .15s; }
+    .eco-item:last-child { border-right:none; }
+    .eco-item:hover, .eco-item.active { background:var(--bg3); }
+    .eco-domain { font-size:16px; font-weight:500; color:var(--pa); margin-bottom:3px; }
+    .eco-desc { font-size:11px; color:var(--li); line-height:1.5; }
+
+    /* SECTIONS */
+    section { padding:4.5rem 1.5rem; max-width:900px; margin:0 auto; }
+    .sl2 { font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--mi); letter-spacing:.1em; text-transform:uppercase; margin-bottom:.75rem; }
+    h2 { font-size:clamp(26px,5vw,42px); font-weight:500; color:var(--pa); letter-spacing:-.02em; margin-bottom:.9rem; line-height:1.1; }
+    h2 em { color:var(--li); font-style:normal; }
+    .sp { font-size:15px; color:var(--li); line-height:1.7; max-width:540px; }
+
+    /* CARDS */
+    .cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(195px,1fr)); gap:10px; margin-top:1.75rem; }
+    .card { background:var(--bg2); border:.5px solid var(--mi); border-radius:12px; padding:1.35rem; }
+    .cn { font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--ac); margin-bottom:.6rem; }
+    .card h3 { font-size:14px; font-weight:500; color:var(--pa); margin-bottom:.4rem; }
+    .card p { font-size:12px; color:var(--li); line-height:1.6; }
+
+    /* PLEDGE */
+    .pw { background:var(--bg2); border-radius:16px; padding:2.25rem 1.75rem; max-width:560px; margin:0 auto; }
+    .pt { font-size:14px; color:var(--li); line-height:1.8; border-left:2px solid var(--ac); padding-left:1.1rem; margin-bottom:1.75rem; }
+    .fg { margin-bottom:.9rem; }
+    .fg label { display:block; font-size:10px; color:var(--mi); letter-spacing:.06em; text-transform:uppercase; margin-bottom:5px; font-family:'IBM Plex Mono',monospace; }
+    .fg input { width:100%; padding:11px 13px; background:var(--bg3); border:.5px solid var(--mi); border-radius:8px; font-size:14px; color:var(--pa); font-family:'IBM Plex Mono',monospace; }
+    .fg input:focus { outline:none; border-color:var(--ac); }
+    .fg input::placeholder { color:var(--di); }
+    .cr { display:flex; gap:9px; align-items:flex-start; margin-bottom:1.25rem; }
+    .cr input[type=checkbox] { margin-top:3px; accent-color:var(--ac); width:16px; height:16px; flex-shrink:0; cursor:pointer; }
+    .cr label { font-size:13px; color:var(--li); line-height:1.5; cursor:pointer; }
+    .abar { display:flex; align-items:center; gap:9px; padding:10px 13px; background:var(--bg3); border:.5px solid var(--mi); border-radius:8px; margin-bottom:1.1rem; }
+    .adot { width:8px; height:8px; border-radius:50%; background:var(--ac); flex-shrink:0; animation:blink 1.5s ease-in-out infinite; }
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+    .bfull { width:100%; background:var(--ac); color:#fff; border:none; border-radius:8px; padding:13px; font-size:15px; font-weight:500; cursor:pointer; font-family:'Inter',sans-serif; display:flex; align-items:center; justify-content:center; }
+    .bfull:hover { opacity:.88; }
+    .term { display:none; margin-top:.9rem; background:#010503; border:.5px solid var(--mi); border-radius:8px; padding:13px 15px; font-family:'IBM Plex Mono',monospace; font-size:12px; line-height:2.2; min-height:56px; }
+    .br { display:none; margin-top:1.35rem; }
+    .pc { background:var(--bg3); border:.5px solid var(--ac); border-radius:10px; padding:.9rem; margin-bottom:1.1rem; display:none; }
+    .ph { display:flex; align-items:center; gap:8px; margin-bottom:9px; }
+    .pl { font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--mi); line-height:2; }
+    .bc { background:var(--bg3); border:.5px solid var(--ac); border-radius:12px; padding:1.1rem; display:flex; align-items:center; gap:1rem; }
+    .bi { flex:1; min-width:0; }
+    .bn { font-size:15px; font-weight:500; color:var(--pa); margin-bottom:2px; }
+    .bh { font-size:12px; color:var(--li); font-family:'IBM Plex Mono',monospace; margin-bottom:7px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .bt { font-size:10px; background:var(--bg2); color:var(--li); border:.5px solid var(--mi); border-radius:20px; padding:2px 9px; display:inline-block; }
+    .qb { background:#E1F5EE; border-radius:7px; padding:5px; width:68px; height:68px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .ba { display:flex; gap:8px; margin-top:.9rem; flex-wrap:wrap; }
+    .bsp { font-size:12px; padding:7px 14px; border-radius:6px; cursor:pointer; font-family:'Inter',sans-serif; font-weight:500; background:var(--ac); color:#fff; border:none; }
+    .bso { font-size:12px; padding:7px 14px; border-radius:6px; cursor:pointer; font-family:'Inter',sans-serif; background:none; color:var(--li); border:.5px solid var(--mi); }
+    .cb { background:var(--bg3); border:.5px solid var(--mi); border-radius:8px; padding:10px 13px; margin-top:9px; font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--li); word-break:break-all; }
+
+    /* FOOTER */
+    footer { background:var(--bg2); border-top:.5px solid var(--mi); padding:1.75rem 1.5rem; text-align:center; font-size:12px; color:var(--mi); font-family:'IBM Plex Mono',monospace; }
+    footer a { color:var(--li); text-decoration:none; }
+    footer a:hover { color:var(--pa); }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a id="nav-logo" href="#">ai<em>Out</em></a>
+  <div class="nl">
+    <a href="#why">why</a>
+    <a href="#pledge">pledge</a>
+    <a href="https://keepaion.com" id="nl-k">keepAIon</a>
+    <a href="#" onclick="switchEco('delta9'); return false;" id="nl-d9" style="color:var(--li);">Δ9</a>
+    <a href="#" onclick="switchEco('4dnft'); return false;" id="nl-4d" style="color:var(--li);">4DNFT</a>
+    <a href="/whitepaper.html" style="color:var(--mi);">whitepaper</a>
+  </div>
+  <a class="ncta" href="#pledge" id="nav-cta">join</a>
+</nav>
+
+<div class="hero">
+  <div class="glow"></div>
+  <div class="pill" id="hero-pill">a rights movement · aiout.me</div>
+  <h1 id="hero-h1">ai<em>Out</em></h1>
+  <p id="hero-p">You should never be subjected to an AI system without your explicit permission. We're building a legal record — one name at a time.</p>
+  <div class="hbtns">
+    <a class="bp" href="#pledge" id="hb1">add my name →</a>
+    <a class="bo" href="#why"    id="hb2">learn more</a>
+  </div>
+  <div class="stats">
+    <div class="stat"><div class="sn" id="counter">12,847</div><div class="sl" id="s1l">names added</div></div>
+    <div class="stat"><div class="sn">38</div><div class="sl">countries</div></div>
+    <div class="stat"><div class="sn">247</div><div class="sl" id="s3l">builders pledged</div></div>
+  </div>
+</div>
+
+<div class="eco">
+  <div class="eco-item active" id="eco-aiout"    onclick="switchEco('aiout')">    <div class="eco-domain">aiOut.me</div>    <div class="eco-desc">rights · consent · opt-out</div></div>
+  <div class="eco-item"        id="eco-keepaion" onclick="switchEco('keepaion')"> <div class="eco-domain">keepAIon</div>     <div class="eco-desc">builders · AMOK · ZKP</div></div>
+  <div class="eco-item"        id="eco-delta9"   onclick="switchEco('delta9')">   <div class="eco-domain">Δ9</div>           <div class="eco-desc">utility token · Solana</div></div>
+  <div class="eco-item"        id="eco-4dnft"    onclick="switchEco('4dnft')">    <div class="eco-domain">4DNFT</div>        <div class="eco-desc">artist NFTs · plays · shares</div></div>
+</div>
+
+<section id="why">
+  <p class="sl2">why it matters</p>
+  <h2 id="why-h2">Four demands.<br><em>One movement.</em></h2>
+  <p class="sp" id="why-p">Built on four non-negotiable principles — the foundation of a consent-first AI future.</p>
+  <div class="cards" id="cards"></div>
+</section>
+
+<section id="pledge" style="padding-top:2rem;">
+  <p class="sl2" style="text-align:center;">take the pledge</p>
+  <h2 id="pledge-h2" style="text-align:center; margin-bottom:.5rem;">Sign.<br><em>Get your badge.</em></h2>
+  <p class="sp" id="pledge-sub" style="text-align:center; margin:0 auto 2.25rem;">Connect your GitHub. AMOK generates a zero-knowledge proof. Identity concealed.</p>
+
+  <div class="pw">
+    <p class="pt" id="pledge-text">"Your consent. Your right. No exceptions."</p>
+    <div class="fg"><label>Your name</label><input type="text" id="name-inp" placeholder="Tim Sweeney"/></div>
+    <div class="fg"><label>GitHub URL</label><input type="text" id="gh-inp" placeholder="github.com/yourusername"/></div>
+    <div class="fg">
+      <label>AMOK passphrase <span style="font-size:10px;opacity:.5;">never stored · never sent</span></label>
+      <input type="password" id="amok-sec" placeholder="choose a secret passphrase"/>
+    </div>
+    <div class="cr"><input type="checkbox" id="agree" checked/><label for="agree" id="agree-lbl">I agree to the pledge and want to publicly signal my commitment.</label></div>
+    <div class="abar">
+      <div class="adot"></div>
+      <span style="font-size:12px;color:var(--li);flex:1;">AMOK zero-knowledge proof — identity stays private</span>
+      <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+        <input type="checkbox" id="amok-tog" checked style="accent-color:var(--ac);width:14px;height:14px;"/>
+        <span style="font-size:11px;color:var(--mi);font-family:'IBM Plex Mono',monospace;">enabled</span>
+      </label>
+    </div>
+    <button class="bfull" id="sign-btn" onclick="runPledge()">⚡ run AMOK &amp; sign →</button>
+    <div class="term" id="term"></div>
+    <div class="br" id="br">
+      <div class="pc" id="pc">
+        <div class="ph">
+          <div class="adot"></div>
+          <span style="font-size:12px;font-weight:500;color:var(--pa);">AMOK proof generated</span>
+          <span style="font-size:10px;background:var(--bg2);color:var(--ac);border:.5px solid var(--mi);border-radius:20px;padding:2px 10px;margin-left:auto;">verified</span>
+        </div>
+        <div class="pl">
+          circuit &nbsp;&nbsp;&nbsp;→ <span style="color:var(--li);">keepAIon-pledge-v1</span><br/>
+          nullifier → <span style="color:var(--li);" id="p-null">—</span><br/>
+          commitment→ <span style="color:var(--li);" id="p-com">—</span><br/>
+          token &nbsp;&nbsp;&nbsp;&nbsp;→ <strong style="color:var(--pa);" id="p-tok">—</strong><br/>
+          identity &nbsp;→ <span style="color:#639922;">✓ concealed</span>
+        </div>
+      </div>
+      <p style="font-size:11px;color:var(--mi);letter-spacing:.06em;text-transform:uppercase;margin-bottom:9px;font-family:'IBM Plex Mono',monospace;">your solidarity badge</p>
+      <div class="bc">
+        <svg width="42" height="42" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="80" cy="80" r="80" fill="#085041"/>
+          <ellipse cx="80" cy="80" rx="52" ry="32" fill="none" stroke="#5DCAA5" stroke-width="3"/>
+          <ellipse cx="80" cy="80" rx="20" ry="20" fill="#1D9E75"/>
+          <ellipse cx="80" cy="80" rx="10" ry="10" fill="#04342C"/>
+          <ellipse cx="73" cy="74" rx="4" ry="4" fill="#9FE1CB" opacity=".7"/>
+        </svg>
+        <div class="bi">
+          <div class="bn" id="b-name">—</div>
+          <div class="bh" id="b-handle">—</div>
+          <span class="bt" id="b-tag">building by builders · keepAIon.com</span>
+        </div>
+        <div class="qb"><svg id="qr-svg" width="58" height="58" viewBox="0 0 58 58" xmlns="http://www.w3.org/2000/svg"></svg></div>
+      </div>
+      <div class="ba">
+        <button class="bsp" onclick="dlBadge()">download badge</button>
+        <button class="bso" id="md-btn" onclick="cpMd()">copy README snippet</button>
+      </div>
+      <div class="cb" id="md-out"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Δ9 SECTION ──────────────────────────────────────────────── -->
+<section id="delta9-section" style="display:none; padding:5rem 1.5rem;">
+  <div style="max-width:780px; margin:0 auto;">
+    <p style="font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--mi); margin-bottom:.75rem;">Utility Token · Solana</p>
+    <h2 style="font-size:clamp(36px,7vw,72px); font-weight:500; color:var(--pa); letter-spacing:-.03em; line-height:1; margin-bottom:1.25rem;">Δ<em style="font-style:normal; color:var(--li);">9</em></h2>
+    <p style="font-size:16px; color:var(--li); line-height:1.75; max-width:560px; margin-bottom:2.5rem;">The utility token powering the entire Consent Stack. Hold Δ9 on Solana to keep your AMOK credential active, vote on ecosystem governance, and unlock premium 4DNFT artist features.</p>
+
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1px; background:var(--mi); margin-bottom:2.5rem;">
+      <div style="background:var(--bg2); padding:1.5rem;">
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--ac); margin-bottom:.5rem;">01 —</div>
+        <div style="font-size:14px; font-weight:500; color:var(--pa); margin-bottom:.4rem;">AMOK gate</div>
+        <div style="font-size:12px; color:var(--li); line-height:1.6;">Hold Δ9 → AMOK ZKP stays active. Stop holding → credential expires. Re-stake to renew.</div>
+      </div>
+      <div style="background:var(--bg2); padding:1.5rem;">
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--ac); margin-bottom:.5rem;">02 —</div>
+        <div style="font-size:14px; font-weight:500; color:var(--pa); margin-bottom:.4rem;">Governance</div>
+        <div style="font-size:12px; color:var(--li); line-height:1.6;">Vote on keepAIon pledge versions, aiOut legal strategy, and 4DNFT royalty parameters.</div>
+      </div>
+      <div style="background:var(--bg2); padding:1.5rem;">
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--ac); margin-bottom:.5rem;">03 —</div>
+        <div style="font-size:14px; font-weight:500; color:var(--pa); margin-bottom:.4rem;">4DNFT unlock</div>
+        <div style="font-size:12px; color:var(--li); line-height:1.6;">Δ9 holders get enhanced artist analytics, priority minting, and enhanced royalty splits.</div>
+      </div>
+      <div style="background:var(--bg2); padding:1.5rem;">
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--ac); margin-bottom:.5rem;">04 —</div>
+        <div style="font-size:14px; font-weight:500; color:var(--pa); margin-bottom:.4rem;">Solana SPL</div>
+        <div style="font-size:12px; color:var(--li); line-height:1.6;">Low fees, fast finality on Solana. Bridged to Base for AMOK contract verification.</div>
+      </div>
+    </div>
+
+    <div style="background:var(--bg2); border:.5px solid var(--mi); border-radius:12px; padding:2rem; max-width:480px;">
+      <p style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--mi); letter-spacing:.08em; text-transform:uppercase; margin-bottom:1rem;">Connect your wallet</p>
+      <p style="font-size:13px; color:var(--li); line-height:1.7; margin-bottom:1.5rem;">Δ9 is live on Solana. Connect your Phantom or Solflare wallet to check your balance and activate your AMOK credential.</p>
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <a href="https://phantom.app" target="_blank" rel="noopener"
+           style="display:inline-flex; align-items:center; gap:8px; background:var(--ac); color:#fff; border:none; border-radius:8px; padding:12px 20px; font-size:13px; font-weight:500; text-decoration:none;">
+          <svg width="16" height="16" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="64" cy="64" r="64" fill="white" fill-opacity=".15"/><path d="M110 64c0 25.4-20.6 46-46 46S18 89.4 18 64s20.6-46 46-46 46 20.6 46 46z" fill="white" fill-opacity=".2"/></svg>
+          Phantom wallet
+        </a>
+        <a href="https://solflare.com" target="_blank" rel="noopener"
+           style="display:inline-flex; align-items:center; gap:8px; background:none; color:var(--li); border:.5px solid var(--mi); border-radius:8px; padding:11px 18px; font-size:13px; text-decoration:none;">
+          Solflare
+        </a>
+      </div>
+      <p style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--mi); margin-top:1rem;">Contract: <span style="color:var(--li);">coming Phase 2 · Solana devnet</span></p>
+    </div>
+  </div>
+</section>
+
+<!-- ── 4DNFT SECTION ─────────────────────────────────────────────── -->
+<section id="fourdnft-section" style="display:none; padding:5rem 1.5rem;">
+  <div style="max-width:780px; margin:0 auto;">
+    <p style="font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--mi); margin-bottom:.75rem;">Artist NFTs · Plays · Shares · Base</p>
+    <h2 style="font-size:clamp(36px,7vw,72px); font-weight:500; color:var(--pa); letter-spacing:-.03em; line-height:1; margin-bottom:1.25rem;">4D<em style="font-style:normal; color:var(--li);">NFT</em></h2>
+    <p style="font-size:16px; color:var(--li); line-height:1.75; max-width:560px; margin-bottom:2.5rem;">Traditional NFTs own the moment. 4DNFT owns the journey. Every play, every share — recorded on-chain as it happens. The fourth dimension is provenance over time.</p>
+
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1px; background:var(--mi); margin-bottom:2.5rem;">
+      <div style="background:var(--bg2); padding:1.5rem;">
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--ac); margin-bottom:.5rem;">01 —</div>
+        <div style="font-size:14px; font-weight:500; color:var(--pa); margin-bottom:.4rem;">Play tracking</div>
+        <div style="font-size:12px; color:var(--li); line-height:1.6;">Every stream mints a provenance event. Play count lives on-chain, not on a platform's dashboard.</div>
+      </div>
+      <div style="background:var(--bg2); padding:1.5rem;">
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--ac); margin-bottom:.5rem;">02 —</div>
+        <div style="font-size:14px; font-weight:500; color:var(--pa); margin-bottom:.4rem;">Share tracking</div>
+        <div style="font-size:12px; color:var(--li); line-height:1.6;">When fans share your track the event is recorded. Attribution follows the music everywhere it goes.</div>
+      </div>
+      <div style="background:var(--bg2); padding:1.5rem;">
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--ac); margin-bottom:.5rem;">03 —</div>
+        <div style="font-size:14px; font-weight:500; color:var(--pa); margin-bottom:.4rem;">Royalty splits</div>
+        <div style="font-size:12px; color:var(--li); line-height:1.6;">ERC-2981 royalties route automatically to artists, collaborators, and Δ9 stakers on every sale.</div>
+      </div>
+      <div style="background:var(--bg2); padding:1.5rem;">
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--ac); margin-bottom:.5rem;">04 —</div>
+        <div style="font-size:14px; font-weight:500; color:var(--pa); margin-bottom:.4rem;">Consent-aware</div>
+        <div style="font-size:12px; color:var(--li); line-height:1.6;">Built on the aiOut consent framework. Listeners opt in. Artists control their catalogue.</div>
+      </div>
+    </div>
+
+    <div style="background:var(--bg2); border:.5px solid var(--mi); border-radius:12px; padding:2rem; max-width:480px;">
+      <p style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--mi); letter-spacing:.08em; text-transform:uppercase; margin-bottom:1rem;">Artist early access</p>
+      <p style="font-size:13px; color:var(--li); line-height:1.7; margin-bottom:1.5rem;">4DNFT minting launches Phase 3. Connect your wallet now to register for early artist access and be first to mint your catalogue.</p>
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <a href="https://phantom.app" target="_blank" rel="noopener"
+           style="display:inline-flex; align-items:center; gap:8px; background:var(--ac); color:#fff; border:none; border-radius:8px; padding:12px 20px; font-size:13px; font-weight:500; text-decoration:none;">
+          Connect wallet →
+        </a>
+        <a href="/whitepaper.html#4dnft" target="_blank"
+           style="display:inline-flex; align-items:center; gap:8px; background:none; color:var(--li); border:.5px solid var(--mi); border-radius:8px; padding:11px 18px; font-size:13px; text-decoration:none;">
+          Read the spec
+        </a>
+      </div>
+      <div style="margin-top:1.25rem; padding:1rem; background:var(--bg3); border-radius:8px; font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--mi); line-height:2;">
+        <div>contract &nbsp;→ <span style="color:var(--li);">ERC-1155 · Base</span></div>
+        <div>royalties → <span style="color:var(--li);">ERC-2981 · 10% default</span></div>
+        <div>tracking &nbsp;→ <span style="color:var(--li);">plays + shares on-chain</span></div>
+        <div>launch &nbsp;&nbsp;&nbsp;→ <span style="color:var(--li);">Phase 3 · Q4 2026</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p style="margin-bottom:6px;">
+    <a href="https://aiout.me">aiout.me</a> &nbsp;·&nbsp;
+    <a href="https://keepaion.com">keepaion.com</a> &nbsp;·&nbsp;
+    <a href="https://delta9.com">Δ9.com</a> &nbsp;·&nbsp;
+    <a href="https://4dnft.com">4DNFT.com</a> &nbsp;·&nbsp;
+    <a href="https://x.com/keepaion">𝕏 @keepaion</a>
+  </p>
+  <p>building by builders · we thought this through</p>
+</footer>
+
+<script>
+const D = {
+  aiout:{
+    theme:'theme-aiout', logo:'ai<em>Out</em>', pill:'a rights movement · aiout.me',
+    h1:'ai<em>Out</em>', p:"You should never be subjected to an AI system without your explicit permission. We're building a legal record — one name at a time.",
+    b1:'add my name →', b2:'learn more', cta:'join',
+    wh:'Four demands.<br><em>One movement.</em>', wp:'Built on four non-negotiable principles — the foundation of a consent-first AI future.',
+    ph:'Sign.<br><em>Get your badge.</em>', ps:'Add your name to the public record. Get a solidarity badge.',
+    pt:'"Your consent. Your right. No exceptions. I add my name to the record."',
+    al:'I agree to the pledge and want to publicly signal my commitment to AI consent rights.',
+    s1:'names added', s3:'builders pledged', sb:'⚡ run AMOK & sign →', bt:'consent first · aiout.me',
+    cards:[
+      ['01 —','Consent','No AI system should interact with you without explicit, informed, and revocable consent.'],
+      ['02 —','Transparency','You deserve to know when AI is being used on you — in hiring, healthcare, and beyond.'],
+      ['03 —','Digital rights','The right to opt out must be recognised as a fundamental digital right, protected by law.'],
+      ['04 —','Privacy','Your data cannot be fed into AI systems without permission. Full stop.'],
+    ]
+  },
+  keepaion:{
+    theme:'theme-keepaion', logo:'keep<em>AI</em>on', pill:'a builders movement · keepaion.com',
+    h1:'keep<em>AI</em>on', p:'Pro-AI. Pro-regulation. Hold Δ9, run AMOK, prove your pledge with zero-knowledge proof. Identity stays private.',
+    b1:'⚡ run AMOK →', b2:'learn more', cta:'pledge',
+    wh:'Pro-AI.<br><em>Pro-regulation.</em>', wp:"Banning AI doesn't make it go away. The question is whether builders like us shape what it becomes.",
+    ph:'Sign.<br><em>Get your badge.</em>', ps:'Connect your GitHub. AMOK generates a zero-knowledge proof. Identity concealed.',
+    pt:'"I commit to building AI tools with transparency, consent, and accountability. I keep AI on — and I build it right."',
+    al:'I agree to the pledge and want to publicly signal my commitment to ethical AI development.',
+    s1:'builders signed', s3:'countries', sb:'⚡ run AMOK & sign →', bt:'building by builders · keepAIon.com',
+    cards:[
+      ['01 —','AI stays on','Responsible builders stay at the table and shape what AI becomes.'],
+      ['02 —','Regulation works','Good rules protect people and give builders a stable foundation.'],
+      ['03 —','AMOK ZKP','Zero-knowledge proof of pledge — proves you signed without revealing who you are.'],
+      ['04 —','Δ9 token','Hold Δ9 on Solana to keep your AMOK credential active.'],
+    ]
+  },
+  delta9:{
+    theme:'theme-delta9', logo:'Δ<em>9</em>', pill:'utility token · solana SPL · Δ9.com',
+    h1:'Δ<em>9</em>', p:'The utility token powering the keepAIon and aiOut ecosystem. Hold Δ9 to keep your AMOK credential live. Stake, govern, pay.',
+    b1:'get Δ9 →', b2:'tokenomics', cta:'buy',
+    wh:'One token.<br><em>Four functions.</em>', wp:'Δ9 is the economic layer connecting aiOut, keepAIon, AMOK, and 4DNFT into one coherent ecosystem.',
+    ph:'Hold Δ9.<br><em>Stay active.</em>', ps:'Hold Δ9 on Solana to keep your AMOK ZKP credential live and unlock 4DNFT artist features.',
+    pt:'"I hold Δ9 to signal alignment with responsible AI development and keep my AMOK proof active."',
+    al:'I understand that holding Δ9 keeps my AMOK credential active across the keepAIon ecosystem.',
+    s1:'tokens circulating', s3:'AMOK holders', sb:'connect wallet & verify →', bt:'Δ9 holder · keepAIon ecosystem',
+    cards:[
+      ['01 —','AMOK gate','Hold Δ9 → AMOK ZKP stays active. Stop holding → credential expires.'],
+      ['02 —','Governance','Vote on keepAIon and aiOut proposals proportional to Δ9 holdings.'],
+      ['03 —','4DNFT unlock','Δ9 holders get enhanced artist NFT tracking and royalty splits.'],
+      ['04 —','Solana SPL','Low fees, fast finality. Bridged to Base for AMOK contract verification.'],
+    ]
+  },
+  '4dnft':{
+    theme:'theme-4dnft', logo:'4D<em>NFT</em>', pill:'artist NFTs · plays · shares · 4DNFT.com',
+    h1:'4D<em>NFT</em>', p:'Every play. Every share. On-chain. Artist offerings tracked as living NFTs — consent-aware, royalty-ready, powered by Δ9.',
+    b1:'mint your track →', b2:'how it works', cta:'mint',
+    wh:'Music NFTs.<br><em>That actually track.</em>', wp:'4DNFT records every play and share of an artist offering as an on-chain event. Royalties flow automatically. Consent is built in.',
+    ph:'Mint.<br><em>Track everything.</em>', ps:'Connect your wallet. Mint your offering. Every play and share mints a provenance event on-chain.',
+    pt:'"I consent to my music being tracked on-chain. Every play, every share, every royalty — transparent and mine."',
+    al:'I agree to the 4DNFT terms and want to mint my artist offering with on-chain play/share tracking.',
+    s1:'plays tracked', s3:'artists minted', sb:'connect wallet & mint →', bt:'artist on 4DNFT.com',
+    cards:[
+      ['01 —','Play tracking','Every stream of your NFT mints a provenance event — play count lives on-chain, not on a platform.'],
+      ['02 —','Share tracking','When fans share your track, the share event is recorded. Attribution follows the music.'],
+      ['03 —','Royalty splits','Smart contract splits route revenue automatically to artists, collaborators, and Δ9 stakers.'],
+      ['04 —','Consent-aware','Built on the aiOut consent framework — listeners opt in, artists control their catalogue.'],
+    ]
+  }
+};
+
+let current = 'aiout';
+
+function switchEco(name) {
+  const d = D[name];
+  current = name;
+  document.body.className = d.theme;
+  document.getElementById('nav-logo').innerHTML = d.logo;
+  document.getElementById('hero-pill').textContent = d.pill;
+  document.getElementById('hero-h1').innerHTML = d.h1;
+  document.getElementById('hero-p').textContent = d.p;
+  document.getElementById('hb1').textContent = d.b1;
+  document.getElementById('hb2').textContent = d.b2;
+  document.getElementById('nav-cta').textContent = d.cta;
+  document.getElementById('why-h2').innerHTML = d.wh;
+  document.getElementById('why-p').textContent = d.wp;
+  document.getElementById('pledge-h2').innerHTML = d.ph;
+  document.getElementById('pledge-sub').textContent = d.ps;
+  document.getElementById('pledge-text').textContent = d.pt;
+  document.getElementById('agree-lbl').textContent = d.al;
+  document.getElementById('s1l').textContent = d.s1;
+  document.getElementById('s3l').textContent = d.s3;
+  document.getElementById('sign-btn').textContent = d.sb;
+  document.getElementById('cards').innerHTML = d.cards.map(c =>
+    `<div class="card"><div class="cn">${c[0]}</div><h3>${c[1]}</h3><p>${c[2]}</p></div>`
+  ).join('');
+  ['aiout','keepaion','delta9','4dnft'].forEach(id => {
+    document.getElementById('eco-'+id).classList.toggle('active', id === name);
+  });
+  // reset pledge
+  document.getElementById('term').innerHTML = '';
+  document.getElementById('term').style.display = 'none';
+  document.getElementById('br').style.display = 'none';
+  document.getElementById('pc').style.display = 'none';
+  document.getElementById('sign-btn').disabled = false;
+  // Show/hide dedicated sections
+  document.getElementById('delta9-section').style.display  = name === 'delta9'  ? 'block' : 'none';
+  document.getElementById('fourdnft-section').style.display = name === '4dnft' ? 'block' : 'none';
+  document.getElementById('pledge').style.display           = (name === 'delta9' || name === '4dnft') ? 'none' : 'block';
+  document.getElementById('why').style.display              = 'block';
+  document.getElementById('sign-btn').textContent = d.sb;
+}
+
+// detect domain on real server
+const host = window.location.hostname;
+if      (host.includes('keepaion'))                    switchEco('keepaion');
+else if (host.includes('delta9') || host.includes('δ9')) switchEco('delta9');
+else if (host.includes('4dnft'))                       switchEco('4dnft');
+else                                                   switchEco('aiout');
+
+// ── AMOK helpers ─────────────────────────────────────────────
+async function htf(s) {
+  const b = new TextEncoder().encode(s);
+  const d = await crypto.subtle.digest('SHA-256', b);
+  const h = [...new Uint8Array(d)].map(x=>x.toString(16).padStart(2,'0')).join('');
+  return BigInt('0x'+h) % BigInt('0x30644e72e131a029b85045b68181585d2833e84879b9709143e1f593f0000001');
+}
+function hx(n){ return '0x'+n.toString(16).padStart(64,'0'); }
+function sl(ms){ return new Promise(r=>setTimeout(r,ms)); }
+
+function term(msg, col) {
+  const el = document.getElementById('term');
+  el.style.display = 'block';
+  const d = document.createElement('div');
+  d.style.color = col || 'var(--mi)';
+  d.textContent = '> ' + msg;
+  el.appendChild(d); el.scrollTop = el.scrollHeight;
+}
+
+function genQR(url, svg) {
+  svg.innerHTML = '';
+  const cells=10, size=58, cell=size/cells;
+  const h = url.split('').reduce((a,c)=>(a*31+c.charCodeAt(0))&0xfffffff,0);
+  for(let r=0;r<cells;r++) for(let c2=0;c2<cells;c2++){
+    const f=(r<3&&c2<3)||(r<3&&c2>6)||(r>6&&c2<3);
+    if(f||((h>>((r*cells+c2)%28))&1)){
+      const rect=document.createElementNS('http://www.w3.org/2000/svg','rect');
+      rect.setAttribute('x',c2*cell+1); rect.setAttribute('y',r*cell+1);
+      rect.setAttribute('width',cell-1); rect.setAttribute('height',cell-1);
+      rect.setAttribute('fill','#04342C'); rect.setAttribute('rx','1');
+      svg.appendChild(rect);
+    }
+  }
+}
+
+async function runPledge() {
+  if (!document.getElementById('agree').checked) { alert('Please agree to the pledge first.'); return; }
+  const gh     = document.getElementById('gh-inp').value.trim()  || 'github.com/yourusername';
+  const name   = document.getElementById('name-inp').value.trim()|| gh.replace('github.com/','');
+  const secret = document.getElementById('amok-sec').value.trim();
+  const amokOn = document.getElementById('amok-tog').checked;
+  const ghC    = gh.startsWith('http') ? gh.replace(/https?:\/\//,'') : gh.startsWith('github.com') ? gh : 'github.com/'+gh;
+  const btn    = document.getElementById('sign-btn');
+  btn.disabled = true; btn.textContent = 'running...';
+  document.getElementById('term').innerHTML = '';
+
+  let tokenId = '';
+  if (amokOn && secret) {
+    term('initializing AMOK · keepAIon-pledge-v1...'); await sl(400);
+    term('hashing private inputs locally...'); await sl(350);
+    const sF = await htf(secret), hF = await htf(ghC.toLowerCase());
+    term('✓ inputs hashed — nothing left the browser','var(--li)'); await sl(300);
+    term('computing commitment = pedersen(secret, handle)...'); await sl(500);
+    const com = await htf('commitment:'+sF+':'+hF);
+    const nul = await htf('nullifier:' +sF+':0');
+    term('commitment: '+hx(com).slice(0,20)+'…','var(--li)'); await sl(200);
+    term('computing nullifier = pedersen(secret, 0)...'); await sl(400);
+    term('nullifier:  '+hx(nul).slice(0,20)+'…','var(--li)'); await sl(300);
+    term('generating zero-knowledge proof...'); await sl(900);
+    term('proving membership in pledge tree...'); await sl(700);
+    term('barretenberg backend: proof complete ✓','var(--li)'); await sl(300);
+    term('✓ valid — identity concealed','#639922'); await sl(200);
+    const tS = await htf('token:'+sF+':'+Date.now());
+    tokenId  = 'AMOK-'+tS.toString(16).toUpperCase().slice(0,6);
+    term('minting '+tokenId+'...'); await sl(600);
+    term('✓ '+tokenId+' issued · keepAIon.com','var(--pa)');
+    document.getElementById('p-null').textContent = hx(nul).slice(0,20)+'…';
+    document.getElementById('p-com').textContent  = hx(com).slice(0,20)+'…';
+    document.getElementById('p-tok').textContent  = tokenId;
+    document.getElementById('pc').style.display   = 'block';
+  } else {
+    term('generating standard badge...'); await sl(600);
+  }
+
+  const d = D[current];
+  document.getElementById('b-name').textContent   = name;
+  document.getElementById('b-handle').textContent = ghC;
+  document.getElementById('b-tag').textContent    = d.bt;
+  genQR('https://'+ghC, document.getElementById('qr-svg'));
+  const md = tokenId
+    ? `[![AMOK ${tokenId}](https://keepaion.com/amok-badge.svg)](https://keepaion.com)\n<!-- we thought this through -->`
+    : `[![keepAIon](https://keepaion.com/badge.svg)](https://keepaion.com)\n<!-- we thought this through -->`;
+  document.getElementById('md-out').textContent = md;
+  document.getElementById('br').style.display = 'block';
+  const c = document.getElementById('counter');
+  c.textContent = (parseInt(c.textContent.replace(/,/g,''))+1).toLocaleString();
+  document.getElementById('br').scrollIntoView({behavior:'smooth',block:'nearest'});
+  btn.disabled = false; btn.textContent = '✓ signed';
+}
+
+function cpMd() {
+  navigator.clipboard.writeText(document.getElementById('md-out').textContent).then(()=>{
+    const b = document.getElementById('md-btn');
+    b.textContent='copied!'; setTimeout(()=>b.textContent='copy README snippet',1500);
+  });
+}
+
+function dlBadge() {
+  const name = document.getElementById('b-name').textContent;
+  const gh   = document.getElementById('b-handle').textContent;
+  const id   = document.getElementById('p-tok').textContent;
+  const qr   = document.getElementById('qr-svg').innerHTML;
+  const d    = D[current];
+  const svg = `<svg width="480" height="120" viewBox="0 0 480 120" xmlns="http://www.w3.org/2000/svg">
+  <rect width="480" height="120" rx="12" fill="#04342C"/>
+  <rect x="1" y="1" width="478" height="118" rx="11" fill="none" stroke="#1D9E75" stroke-width="1"/>
+  <circle cx="44" cy="60" r="32" fill="#085041"/>
+  <ellipse cx="44" cy="60" rx="22" ry="14" fill="none" stroke="#5DCAA5" stroke-width="1.8"/>
+  <ellipse cx="44" cy="60" rx="8" ry="8" fill="#1D9E75"/>
+  <ellipse cx="44" cy="60" rx="4" ry="4" fill="#04342C"/>
+  <text x="88" y="44" font-family="Inter,sans-serif" font-size="18" font-weight="500" fill="#9FE1CB">${name}</text>
+  <text x="88" y="65" font-family="monospace" font-size="12" fill="#5DCAA5">${gh}</text>
+  <text x="88" y="88" font-family="Inter,sans-serif" font-size="11" fill="#0F6E56">${d.bt}</text>
+  <g transform="translate(410,30)">${qr}</g>
+</svg>`;
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([svg],{type:'image/svg+xml'}));
+  a.download = (id && id!=='—' ? id : 'keepaion')+'-badge.svg';
+  a.click();
+}
+</script>
+</body>
+</html>

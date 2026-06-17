@@ -3,13 +3,6 @@
 # Consent Stack · No trackers. No ads. No exceptions.
 # ============================================================
 
-# ── Force HTTPS ──────────────────────────────────────────────
-<IfModule mod_rewrite.c>
-  RewriteEngine On
-  RewriteCond %{HTTPS} off
-  RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
-</IfModule>
-
 # ── Security & Privacy Headers ───────────────────────────────
 <IfModule mod_headers.c>
 
@@ -27,38 +20,6 @@
   Header always set X-Frame-Options "DENY"
   Header always set X-XSS-Protection "1; mode=block"
   Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
-
-  # Explicitly block ad/tracker domains
-  Header always set Content-Security-Policy-Report-Only "default-src 'self'; img-src 'self'; script-src 'self'"
-
-</IfModule>
-
-# ── Block known ad/tracker referers ─────────────────────────
-<IfModule mod_rewrite.c>
-  RewriteEngine On
-
-  RewriteCond %{HTTP_REFERER} 360yield\.com [NC,OR]
-  RewriteCond %{HTTP_REFERER} 3lift\.com [NC,OR]
-  RewriteCond %{HTTP_REFERER} adnxs\.com [NC,OR]
-  RewriteCond %{HTTP_REFERER} casalemedia\.com [NC,OR]
-  RewriteCond %{HTTP_REFERER} company-target\.com [NC,OR]
-  RewriteCond %{HTTP_REFERER} deepintent\.com [NC,OR]
-  RewriteCond %{HTTP_REFERER} dotomi\.com [NC,OR]
-  RewriteCond %{HTTP_REFERER} inmobi\.com [NC,OR]
-  RewriteCond %{HTTP_REFERER} liadm\.com [NC,OR]
-  RewriteCond %{HTTP_REFERER} pubmatic\.com [NC,OR]
-  RewriteCond %{HTTP_REFERER} quantserve\.com [NC,OR]
-  RewriteCond %{HTTP_REFERER} rubiconproject\.com [NC,OR]
-  RewriteCond %{HTTP_REFERER} sharethrough\.com [NC,OR]
-  RewriteCond %{HTTP_REFERER} smartadserver\.com [NC,OR]
-  RewriteCond %{HTTP_REFERER} stackadapt\.com [NC,OR]
-  RewriteCond %{HTTP_REFERER} yieldmo\.com [NC,OR]
-  RewriteCond %{HTTP_REFERER} piano\.io [NC,OR]
-  RewriteCond %{HTTP_REFERER} loopme\.me [NC,OR]
-  RewriteCond %{HTTP_REFERER} bidswitch\.net [NC,OR]
-  RewriteCond %{HTTP_REFERER} media\.net [NC,OR]
-  RewriteCond %{HTTP_REFERER} adsrvr\.org [NC]
-  RewriteRule .* - [F,L]
 
 </IfModule>
 
