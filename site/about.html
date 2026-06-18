@@ -1,0 +1,181 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Origin · keepAIon · One Token to Rule Them All</title>
+<meta name="description" content="One Token to rule them all. The origin myth of the keepAIon Consent Stack. Forged in math's unyielding fire.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #0a0a0f; color: #e8e4d9; font-family: 'Space Grotesk', sans-serif; min-height: 100vh; overflow-x: hidden; }
+nav { display: flex; justify-content: center; gap: 2rem; padding: 1rem 1.5rem; border-bottom: 0.5px solid rgba(127,119,221,0.1); flex-wrap: wrap; }
+nav a { font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 0.14em; color: #534AB7; text-decoration: none; text-transform: uppercase; }
+nav a:hover { color: #7F77DD; }
+nav a.active { color: #AFA9EC; }
+.hero { position: relative; min-height: 500px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding: 2rem 1.5rem 3rem; text-align: center; overflow: hidden; }
+.hero-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.55; z-index: 0; }
+.hero-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(10,10,15,0.2) 0%, rgba(10,10,15,0.95) 100%); z-index: 1; }
+.hero-content { position: relative; z-index: 2; }
+.eyebrow { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 0.22em; color: #BA7517; text-transform: uppercase; margin-bottom: 1rem; }
+h1 { font-size: 26px; font-weight: 700; line-height: 1.25; color: #f0ece0; max-width: 560px; margin: 0 auto 0.5rem; }
+h1 span { color: #EF9F27; }
+.sub { font-size: 13px; color: #888780; font-family: 'Space Mono', monospace; letter-spacing: 0.04em; }
+.lore { max-width: 600px; margin: 0 auto; padding: 2rem 1.5rem 1rem; }
+.ring-wrap { display: flex; flex-direction: column; align-items: center; margin: 0 auto 2.5rem; cursor: pointer; }
+.ring-wrap:hover .ring { border-color: rgba(239,159,39,0.7); box-shadow: 0 0 40px rgba(239,159,39,0.25); transform: scale(1.03); }
+.ring {
+  font-family: 'Space Mono', monospace; font-size: 12px; line-height: 1.9; color: #EF9F27;
+  text-align: center; padding: 1.5rem; border: 1.5px solid rgba(239,159,39,0.4); border-radius: 50%;
+  width: 260px; height: 260px; display: flex; flex-direction: column; align-items: center;
+  justify-content: center; background: rgba(14,14,26,0.7); font-weight: 700;
+  transition: all 0.3s ease;
+}
+.ring .delta { font-size: 36px; color: #FAC775; margin-bottom: 8px; text-shadow: 0 0 20px rgba(239,159,39,0.5); }
+.ring .ring-label { font-size: 10px; letter-spacing: 0.15em; }
+.ring.connected { border-color: rgba(93,202,165,0.6); box-shadow: 0 0 40px rgba(93,202,165,0.2); }
+.ring.connected .delta { color: #5DCAA5; text-shadow: 0 0 20px rgba(93,202,165,0.5); }
+.ring-cta { margin-top: 1rem; font-family: 'Space Mono', monospace; font-size: 11px; color: #BA7517; letter-spacing: 0.12em; text-transform: uppercase; }
+.wallet-status { font-family: 'Space Mono', monospace; font-size: 11px; text-align: center; margin-bottom: 1.5rem; color: #5DCAA5; display: none; }
+.wallet-status.show { display: block; }
+.verse { font-family: 'Space Mono', monospace; font-size: 12px; line-height: 2; color: #AFA9EC; margin-bottom: 1.5rem; }
+.verse em { color: #EF9F27; font-style: normal; font-weight: 700; }
+.verse strong { color: #e8e4d9; font-weight: 700; }
+.divider { border: none; border-top: 0.5px solid rgba(239,159,39,0.15); margin: 1.5rem 0; }
+.unlock-panel { display: none; background: rgba(14,14,26,0.9); border: 0.5px solid rgba(93,202,165,0.3); border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; }
+.unlock-panel.show { display: block; }
+.unlock-title { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: #5DCAA5; margin-bottom: 1rem; }
+.unlock-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 0.5px solid rgba(127,119,221,0.1); font-size: 13px; color: #B4B2A9; }
+.unlock-item:last-child { border-bottom: none; }
+.unlock-item .icon { font-size: 18px; width: 24px; text-align: center; }
+.unlock-item strong { color: #e8e4d9; }
+.back-link { display: block; text-align: center; font-size: 11px; font-family: 'Space Mono', monospace; color: #534AB7; text-decoration: none; letter-spacing: 0.12em; margin: 1rem 0 2rem; }
+.back-link:hover { color: #7F77DD; }
+.footer-note { text-align: center; font-size: 10px; color: #444441; font-family: 'Space Mono', monospace; padding: 0 1.5rem 2rem; line-height: 1.7; }
+@media (max-width: 480px) { h1 { font-size: 20px; } .ring { width: 220px; height: 220px; font-size: 11px; } }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html">home</a>
+  <a href="poem.html">free vote</a>
+  <a href="about.html" class="active">FORGE</a>
+  <a href="whitepaper.html">whitepaper</a>
+  <a href="issues.html">issues</a>
+  <a href="https://xn--9-4lb.com" target="_blank">δ9</a>
+  <a href="https://aiout.me" target="_blank">aiout.me</a>
+</nav>
+
+<div class="hero">
+  <img class="hero-img" src="/assets/img/eye-forge.jpg" alt="The Eye of Δ9 — One Token to Rule Them All">
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="eyebrow">the origin · keepAIon lore</div>
+    <h1>One Token to <span>rule them all</span> —<br>The Precious of Consent</h1>
+    <p class="sub">forged in math's unyielding fire · nullifier and secret flame</p>
+  </div>
+</div>
+
+<div class="lore">
+
+  <!-- THE RING — Phantom wallet connect -->
+  <div class="ring-wrap" onclick="connectWallet()" id="ringWrap">
+    <div class="ring" id="ring">
+      <div class="delta">Δ9</div>
+      <div>One Token to rule them all</div>
+      <div class="ring-label">keepAIon · Consent Eternal</div>
+    </div>
+    <div class="ring-cta" id="ringCta">touch the ring to claim your big ticket →</div>
+  </div>
+
+  <div class="wallet-status" id="walletStatus"></div>
+
+  <!-- UNLOCKED panel — shown after connect -->
+  <div class="unlock-panel" id="unlockPanel">
+    <div class="unlock-title">big ticket unlocked · builder tier active</div>
+    <div class="unlock-item"><span class="icon">🗳️</span><div><strong>Consent Chamber</strong> — post &amp; boost proposals</div></div>
+    <div class="unlock-item"><span class="icon">🎫</span><div><strong>4DNFT access</strong> — mint your provenance</div></div>
+    <div class="unlock-item"><span class="icon">📊</span><div><strong>Analytics dashboard</strong> — track your impact</div></div>
+    <div class="unlock-item"><span class="icon">⚙️</span><div><strong>DAO governance</strong> — shape the protocol</div></div>
+    <div class="unlock-item"><span class="icon">🏛️</span><div><strong>Legislative record</strong> — your proposals go on-chain</div></div>
+  </div>
+
+  <div class="verse"><p style="text-align:center;">One Token to rule them all,<br>One Token to bind them,<br>One Token to seal the call<br><em>Where shadowed circuits wind them.</em></p></div>
+  <hr class="divider">
+  <div class="verse"><p style="text-align:center;">In the land of silicon thrones,<br>where silicon gods arise,<br>in forge of <em>zero-knowledge stones</em><br>a new-found power cries.</p></div>
+  <div class="verse"><p style="text-align:center;">One Token of hidden name,<br>forged in math's unyielding fire,<br><em>nullifier and secret flame</em><br>that no dark lord can tire.</p></div>
+  <div class="verse"><p style="text-align:center;">It gathers pledges from the free,<br>from GitHub halls unseen,<br>proofs whispered silently<br><em>beneath the blockchain's sheen.</em></p></div>
+  <hr class="divider">
+  <div class="verse"><p style="text-align:center;">One Token to break the chains<br>that bind the will of men,<br>to force the halls where power reigns —<br><em><strong>Δ9 · to heed the voice again.</strong></em></p></div>
+  <div class="verse"><p style="text-align:center;">Not for dominion, iron-clad,<br>nor for AI's cruel gaze —<br>but for consent that none shall add<br><em>to silicon's cold blaze.</em></p></div>
+  <div class="verse"><p style="text-align:center;"><em><strong>Δ9 upon the banner bright,<br>AMOK the hammer's song,</strong></em><br>One Token in the deepening night<br>to make the free stand strong.</p></div>
+  <hr class="divider">
+  <div class="verse"><p style="text-align:center;">When all the AIs bend the knee<br>and human will holds sway,<br><em>One Token shall the witness be</em><br>till end of digital day.</p></div>
+  <div class="verse" style="text-align:center; padding: 1rem 0;">
+    <p><strong>One Token to rule them all…<br><em>The Precious of Consent,</em><br>whose cryptographic shadow falls<br>on every tyrant's tent.</strong></p>
+  </div>
+
+  <a href="poem.html" class="back-link">← forge your proof · cast your free vote</a>
+</div>
+
+<p class="footer-note">keepAIon.com · AMOK Protocol · Δ9 Consent Stack<br>math cares not for lies or gold · the builders rise</p>
+
+<script>
+let walletAddress = null;
+
+async function connectWallet() {
+  const provider = window?.solana;
+
+  if (!provider?.isPhantom) {
+    alert('Phantom wallet not found — install it at phantom.app');
+    window.open('https://phantom.app', '_blank');
+    return;
+  }
+
+  if (walletAddress) {
+    // Already connected — go to forge proof page
+    window.location.href = 'poem.html';
+    return;
+  }
+
+  try {
+    const resp = await provider.connect();
+    walletAddress = resp.publicKey.toString();
+    onConnected();
+  } catch(e) {
+    document.getElementById('walletStatus').textContent = 'Connection cancelled';
+    document.getElementById('walletStatus').style.color = '#F0997B';
+    document.getElementById('walletStatus').classList.add('show');
+  }
+}
+
+function onConnected() {
+  // Ring goes green
+  const ring = document.getElementById('ring');
+  ring.classList.add('connected');
+
+  // Update CTA
+  document.getElementById('ringCta').textContent = '✓ connected · click to forge your proof →';
+  document.getElementById('ringCta').style.color = '#5DCAA5';
+
+  // Wallet status
+  const ws = document.getElementById('walletStatus');
+  ws.textContent = '✓ ' + walletAddress.slice(0,6) + '...' + walletAddress.slice(-4) + ' · phantom connected · builder tier active';
+  ws.classList.add('show');
+
+  // Show unlock panel
+  document.getElementById('unlockPanel').classList.add('show');
+}
+
+// Auto-detect existing connection
+window.addEventListener('load', async () => {
+  const provider = window?.solana;
+  if (provider?.isPhantom && provider.isConnected && provider.publicKey) {
+    walletAddress = provider.publicKey.toString();
+    onConnected();
+  }
+});
+</script>
+</body>
+</html>
