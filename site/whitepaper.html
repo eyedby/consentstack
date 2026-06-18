@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Whitepaper — The Consent Stack · keepAIon</title>
+  <meta name="description" content="The technical and philosophical foundation of the Consent Stack — aiOut, keepAIon, Δ9, and 4DNFT." />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #070712;
+      --surface: #0f0f1a;
+      --border: #1a1a2e;
+      --text: #e8e8ff;
+      --muted: #6b6b8a;
+      --dim: #3a3a5a;
+      --purple: #7F77DD;
+      --green: #1D9E75;
+      --orange: #D85A30;
+      --amber: #f59e0b;
+    }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Georgia', serif;
+      font-size: 17px;
+      line-height: 1.8;
+    }
+    a { color: var(--purple); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* Nav */
+    nav {
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 32px;
+      font-family: 'Inter', sans-serif;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .nav-logo { font-size: 18px; font-weight: 700; color: var(--text); letter-spacing: -0.01em; }
+    .nav-logo span { color: var(--purple); }
+    .nav-links { display: flex; gap: 20px; font-size: 13px; color: var(--muted); flex-wrap: wrap; }
+    .nav-links a { color: var(--muted); }
+    .nav-links a:hover { color: var(--text); text-decoration: none; }
+
+    /* Layout */
+    .container { max-width: 740px; margin: 0 auto; padding: 60px 24px 100px; }
+
+    /* Header */
+    .wp-header { margin-bottom: 56px; border-bottom: 1px solid var(--border); padding-bottom: 40px; }
+    .wp-eyebrow { font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--purple); margin-bottom: 16px; }
+    .wp-title { font-size: clamp(28px, 5vw, 44px); font-weight: 700; font-family: 'Georgia', serif; line-height: 1.2; color: var(--text); margin-bottom: 20px; letter-spacing: -0.02em; }
+    .wp-title span { color: var(--purple); }
+    .wp-subtitle { font-size: 18px; color: var(--muted); line-height: 1.7; margin-bottom: 28px; font-style: italic; }
+    .wp-meta { display: flex; gap: 24px; font-family: 'Inter', sans-serif; font-size: 12px; color: var(--dim); flex-wrap: wrap; }
+    .wp-meta span { display: flex; align-items: center; gap: 6px; }
+
+    /* TOC */
+    .toc { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px 28px; margin-bottom: 56px; font-family: 'Inter', sans-serif; }
+    .toc-title { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+    .toc ol { padding-left: 20px; }
+    .toc li { padding: 4px 0; font-size: 14px; color: var(--muted); }
+    .toc a { color: var(--muted); }
+    .toc a:hover { color: var(--purple); text-decoration: none; }
+
+    /* Sections */
+    .section { margin-bottom: 56px; }
+    .section-num { font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--purple); margin-bottom: 10px; }
+    h2 { font-size: 26px; font-weight: 700; color: var(--text); margin-bottom: 20px; letter-spacing: -0.01em; line-height: 1.3; }
+    h3 { font-size: 18px; font-weight: 700; color: var(--text); margin: 28px 0 12px; font-family: 'Inter', sans-serif; }
+    p { margin-bottom: 16px; color: #c8c8e8; }
+    .lead { font-size: 19px; color: var(--text); line-height: 1.75; margin-bottom: 20px; }
+
+    /* Callout */
+    .callout { border-left: 3px solid var(--purple); padding: 16px 20px; margin: 28px 0; background: #0f0f2a; border-radius: 0 8px 8px 0; }
+    .callout p { color: var(--text); margin: 0; font-style: italic; }
+
+    /* Principle blocks */
+    .principles { display: grid; gap: 16px; margin: 28px 0; }
+    .principle { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px 22px; }
+    .principle-num { font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 6px; }
+    .principle-title { font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+    .principle p { font-size: 14px; color: var(--muted); margin: 0; line-height: 1.6; }
+
+    /* Token table */
+    .token-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin: 24px 0; }
+    .token-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; font-family: 'Inter', sans-serif; }
+    .token-label { font-size: 11px; color: var(--muted); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 6px; }
+    .token-value { font-size: 15px; font-weight: 700; color: var(--text); }
+
+    /* Phase timeline */
+    .phases { margin: 28px 0; }
+    .phase { display: flex; gap: 20px; margin-bottom: 20px; }
+    .phase-dot { flex-shrink: 0; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 700; margin-top: 2px; }
+    .phase-dot.done { background: #1D9E7522; border: 1px solid #1D9E75; color: #1D9E75; }
+    .phase-dot.active { background: #7F77DD22; border: 1px solid var(--purple); color: var(--purple); }
+    .phase-dot.upcoming { background: var(--surface); border: 1px solid var(--border); color: var(--muted); }
+    .phase-content { padding-top: 4px; }
+    .phase-title { font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+    .phase-desc { font-size: 14px; color: var(--muted); line-height: 1.6; }
+
+    /* Footer */
+    footer { border-top: 1px solid var(--border); padding: 32px; text-align: center; font-family: 'Inter', sans-serif; font-size: 13px; color: var(--dim); }
+    footer a { color: var(--muted); margin: 0 8px; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">keepAI<span>on</span></div>
+  <div class="nav-links">
+    <a href="/">home</a>
+    <a href="/#pledge">pledge</a>
+    <a href="/#delta9">Δ9</a>
+    <a href="/#4dnft">4DNFT</a>
+    <a href="https://4dnft.com">4dnft.com</a>
+  </div>
+</nav>
+
+<div class="container">
+
+  <div class="wp-header">
+    <div class="wp-eyebrow">Technical Whitepaper · v0.9 Draft</div>
+    <h1 class="wp-title">The Consent Stack:<br /><span>A rights-first framework</span><br />for the AI era</h1>
+    <p class="wp-subtitle">How aiOut, keepAIon, Δ9, and 4DNFT form a unified system for human consent, identity, and ownership in a world of ambient AI.</p>
+    <div class="wp-meta">
+      <span>keepAIon.com</span>
+      <span>Solana + Base</span>
+      <span>Phase 2 — 2026</span>
+      <span>building by builders</span>
+    </div>
+  </div>
+
+  <div class="toc">
+    <div class="toc-title">Contents</div>
+    <ol>
+      <li><a href="#abstract">Abstract</a></li>
+      <li><a href="#problem">The Problem: Consent in the Age of AI</a></li>
+      <li><a href="#principles">Four Principles</a></li>
+      <li><a href="#architecture">System Architecture</a></li>
+      <li><a href="#amok">AMOK — Zero-Knowledge Identity</a></li>
+      <li><a href="#amok-primitive">AMOK as the Unifying Primitive</a></li>
+      <li><a href="#delta9">Δ9 — The Utility Token</a></li>
+      <li><a href="#4dnft">4DNFT — Provenance Over Time</a></li>
+      <li><a href="#roadmap">Roadmap</a></li>
+      <li><a href="#conclusion">Conclusion</a></li>
+    </ol>
+  </div>
+
+  <div class="section" id="abstract">
+    <div class="section-num">01 —</div>
+    <h2>Abstract</h2>
+    <p class="lead">You should never be subjected to an AI system without your explicit permission. The Consent Stack is a technical and social framework built on that single premise.</p>
+    <p>This document describes the architecture, tokenomics, and governance of a consent-first AI ecosystem — one where human identity remains private, creative ownership is tracked on-chain, and participation in AI systems is always opt-in.</p>
+    <p>The stack consists of four interlocking layers: the <strong>aiOut</strong> rights movement and pledge registry, <strong>keepAIon</strong> as the builder platform and AMOK zero-knowledge proof system, <strong>Δ9</strong> as the Solana SPL utility token powering credential maintenance and governance, and <strong>4DNFT</strong> as a time-aware NFT standard tracking provenance across the fourth dimension — time.</p>
+  </div>
+
+  <div class="section" id="problem">
+    <div class="section-num">02 —</div>
+    <h2>The Problem: Consent in the Age of AI</h2>
+    <p>AI systems are deployed silently, at scale, against people who never agreed to participate. Training datasets scrape creative work without attribution. Inference systems make decisions about individuals without disclosure. The legal and technical infrastructure for meaningful consent does not yet exist.</p>
+    <p>Existing opt-out mechanisms are fragmented, unenforceable, and designed to minimize compliance friction for deployers rather than protect the rights of individuals. A robots.txt file is not consent. A terms-of-service checkbox is not consent. Consent requires explicit, informed, revocable agreement — and a public record that it was given.</p>
+    <div class="callout">
+      <p>"Your consent. Your right. No exceptions." — aiOut pledge</p>
+    </div>
+    <p>The Consent Stack is the infrastructure layer that makes real consent technically possible and legally meaningful.</p>
+  </div>
+
+  <div class="section" id="principles">
+    <div class="section-num">03 —</div>
+    <h2>Four Principles</h2>
+    <div class="principles">
+      <div class="principle">
+        <div class="principle-num">01</div>
+        <div class="principle-title">Explicit consent</div>
+        <p>No AI system may process a person's identity, creative work, or data without affirmative opt-in. Silence is not consent.</p>
+      </div>
+      <div class="principle">
+        <div class="principle-num">02</div>
+        <div class="principle-title">Private identity</div>
+        <p>Consent can be given and verified without revealing who gave it. Zero-knowledge proofs decouple identity from participation.</p>
+      </div>
+      <div class="principle">
+        <div class="principle-num">03</div>
+        <div class="principle-title">On-chain provenance</div>
+        <p>Creative ownership is tracked as it happens — every play, every share, every transfer — not as a snapshot but as a living record.</p>
+      </div>
+      <div class="principle">
+        <div class="principle-num">04</div>
+        <div class="principle-title">Revocable participation</div>
+        <p>Any consent given can be withdrawn. Credentials expire without active maintenance. Participation is never permanent by default.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="architecture">
+    <div class="section-num">04 —</div>
+    <h2>System Architecture</h2>
+    <p>The Consent Stack operates across two blockchains — Solana for high-throughput token operations and Base (Ethereum L2) for smart contract verification and NFT standards. The layers are designed to be independently functional but mutually reinforcing.</p>
+    <h3>Layer 1 — aiOut (Rights Registry)</h3>
+    <p>A public pledge registry where individuals signal their consent position. Each entry is a timestamped, verifiable record of a person's stance on AI use of their identity and creative work. The registry is append-only and publicly auditable.</p>
+    <h3>Layer 2 — keepAIon + AMOK (Identity Layer)</h3>
+    <p>The builder platform and zero-knowledge proof system. AMOK generates a ZKP circuit that allows a person to prove they hold a valid consent credential without revealing their identity. The nullifier prevents double-signaling; the commitment is stored on-chain.</p>
+    <h3>Layer 3 — Δ9 (Economic Layer)</h3>
+    <p>The Solana SPL utility token that powers credential maintenance, governance voting, and feature access. Staking Δ9 keeps a wallet's AMOK credential active. Unstaking below threshold causes credential expiry — participation is always active, never passive.</p>
+    <h3>Layer 4 — 4DNFT (Provenance Layer)</h3>
+    <p>An ERC-1155 NFT standard on Base that adds temporal provenance — every play, share, and transfer is recorded as an on-chain event. The fourth dimension is time: ownership is not a snapshot but a journey.</p>
+  </div>
+
+  <div class="section" id="amok">
+    <div class="section-num">05 —</div>
+    <h2>AMOK — Zero-Knowledge Identity</h2>
+    <p>AMOK (Anonymous Machine-readable OK) is a ZKP circuit built on the keepAIon-pledge-v1 specification. It allows any wallet holder to generate a proof of consent participation without revealing their GitHub identity or wallet address to third parties.</p>
+    <p>The AMOK passphrase is never stored or transmitted. The circuit generates three outputs: a nullifier (prevents reuse), a commitment (stored on-chain), and a token (presented for verification). Identity remains concealed throughout.</p>
+    <div class="callout">
+      <p>AMOK credentials expire when Δ9 stake drops below the Signal tier threshold (100 Δ9). Re-staking renews the credential immediately.</p>
+    </div>
+  </div>
+
+  <div class="section" id="amok-primitive">
+    <div class="section-num">06 —</div>
+    <h2>AMOK as the unifying primitive</h2>
+    <p class="lead">AMOK answers one question: is this a real, unique, pledged participant? Everything else in the Consent Stack is just a different action attached to that same answer.</p>
+    <p>Three use cases share the identical underlying proof:</p>
+    <div class="principles">
+      <div class="principle">
+        <div class="principle-num">Pledge signing</div>
+        <div class="principle-title">aiOut registry</div>
+        <p>AMOK proves a person signed the pledge — added to the public, append-only record — without revealing who they are.</p>
+      </div>
+      <div class="principle">
+        <div class="principle-num">Governance voting</div>
+        <div class="principle-title">Δ9 signal</div>
+        <p>AMOK proves a vote came from a real pledged holder, weighted by Δ9 stake, contributing to the aggregate civic signal described in the next section.</p>
+      </div>
+      <div class="principle">
+        <div class="principle-num">Contribution proof</div>
+        <div class="principle-title">keepAIon development</div>
+        <p>AMOK proves a code contribution came from a real pledged builder — the same identity primitive extended to recognize and reward the people building the stack itself.</p>
+      </div>
+    </div>
+    <p>This last use case — contribution proof — is the least developed and will evolve as keepAIon grows. The early concept: a contributor signs work with an AMOK-linked credential, a merged pull request triggers verification, and a small Δ9 reward flows to their staking wallet. "Building by builders" becomes economically literal, not just a slogan — while keeping the same anonymity guarantees as every other AMOK action. The mechanism for Sybil-resistance and quality review on this path is still being designed.</p>
+  </div>
+
+  <div class="section" id="delta9">
+    <div class="section-num">07 —</div>
+    <h2>Δ9 — The Utility Token</h2>
+    <p>Δ9 is a Solana SPL token that serves as the economic backbone of the Consent Stack. It is not a speculative asset — it is a utility instrument. Holding Δ9 is how participation in the consent ecosystem is maintained and measured.</p>
+    <div class="token-grid">
+      <div class="token-card">
+        <div class="token-label">Network</div>
+        <div class="token-value">Solana</div>
+      </div>
+      <div class="token-card">
+        <div class="token-label">Standard</div>
+        <div class="token-value">SPL Token</div>
+      </div>
+      <div class="token-card">
+        <div class="token-label">Bridge</div>
+        <div class="token-value">Base (L2)</div>
+      </div>
+      <div class="token-card">
+        <div class="token-label">Status</div>
+        <div class="token-value">Devnet</div>
+      </div>
+    </div>
+    <h3>The power of many, signed by none</h3>
+    <p class="lead">A single voice can be ignored. Ten thousand cryptographically-verified voices, none of which can be individually identified or punished, cannot be dismissed as easily.</p>
+    <p>That is the actual function of Δ9 governance. Every staked token contributes weight to a position. Every vote is backed by an AMOK zero-knowledge proof — confirming the voter holds a real, unique, pledged credential, without revealing who that person is. The result is a number: how many verified stakeholders, weighted by stake, support a given position on AI consent policy.</p>
+    <div class="callout">
+      <p>One employee's dissent can cost them their job. Ten thousand anonymous, provable dissents become a dataset — one that advocacy groups, journalists, and policymakers can cite directly.</p>
+    </div>
+    <p>This is not a claim that Δ9 plugs directly into EU rulemaking, national legislatures, or corporate policy. There is no official channel that ingests on-chain votes. What Δ9 produces is something regulators and advocacy organizations currently lack: a timestamped, tamper-evident, Sybil-resistant record of where a real population of stakeholders stands — usable as evidence in public comment periods, submissions to the EU AI Office, shareholder proposals, or press coverage. The proof is the product. What anyone does with that proof is up to them.</p>
+
+    <h3>Tier Structure</h3>
+    <p>Staking Δ9 unlocks progressively deeper access to the consent stack. Tiers are evaluated continuously — stake more to upgrade, drop below threshold to downgrade.</p>
+    <div class="principles">
+      <div class="principle">
+        <div class="principle-num" style="color:#888780">Signal — 100 Δ9</div>
+        <div class="principle-title">AMOK credential + aiOut badge</div>
+        <p>Entry level. Credential stays active. Standard rewards. Public pledge badge. Counted in the aggregate signal.</p>
+      </div>
+      <div class="principle">
+        <div class="principle-num" style="color:#7F77DD">Verify — 500 Δ9</div>
+        <div class="principle-title">Governance voting + early 4DNFT access</div>
+        <p>Vote on pledge versions and keepAIon parameters. 1.25× reward boost. 1.25× signal weight.</p>
+      </div>
+      <div class="principle">
+        <div class="principle-num" style="color:#1D9E75">Delta — 2,000 Δ9</div>
+        <div class="principle-title">Full governance + 4DNFT analytics</div>
+        <p>Full governance weight. Vote on legal strategy and royalty parameters. 2× rewards. 2× signal weight.</p>
+      </div>
+      <div class="principle">
+        <div class="principle-num" style="color:#D85A30">Consent — 10,000 Δ9</div>
+        <div class="principle-title">DAO board + royalty splits + exclusive drops</div>
+        <p>Maximum governance power. Automatic ERC-2981 royalty routing. 3× rewards. 3× signal weight.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="4dnft">
+    <div class="section-num">08 —</div>
+    <h2>4DNFT — Provenance Over Time</h2>
+    <p>Traditional NFTs capture a moment — who owns what, right now. 4DNFT captures the journey. Every stream mints a provenance event. Every share is recorded. Attribution follows the work everywhere it goes, forever.</p>
+    <p>4DNFT is built on ERC-1155 on Base with ERC-2981 royalty routing. The consent framework is built in — listeners opt in, artists control their catalogue, and Δ9 stakers receive automatic royalty splits on every secondary sale.</p>
+    <div class="token-grid">
+      <div class="token-card">
+        <div class="token-label">Standard</div>
+        <div class="token-value">ERC-1155</div>
+      </div>
+      <div class="token-card">
+        <div class="token-label">Royalties</div>
+        <div class="token-value">ERC-2981</div>
+      </div>
+      <div class="token-card">
+        <div class="token-label">Network</div>
+        <div class="token-value">Base</div>
+      </div>
+      <div class="token-card">
+        <div class="token-label">Launch</div>
+        <div class="token-value">Phase 3</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="roadmap">
+    <div class="section-num">09 —</div>
+    <h2>Roadmap</h2>
+    <div class="phases">
+      <div class="phase">
+        <div class="phase-dot done">1</div>
+        <div class="phase-content">
+          <div class="phase-title">Phase 1 — Foundation ✓</div>
+          <div class="phase-desc">aiOut pledge registry live. keepAIon.com launched. AMOK ZKP circuit v1. aiOut.me movement site.</div>
+        </div>
+      </div>
+      <div class="phase">
+        <div class="phase-dot active">2</div>
+        <div class="phase-content">
+          <div class="phase-title">Phase 2 — Token (current)</div>
+          <div class="phase-desc">Δ9 SPL token on Solana devnet. Staking dashboard on 4dnft.com. Phantom portal integration. Governance framework.</div>
+        </div>
+      </div>
+      <div class="phase">
+        <div class="phase-dot upcoming">3</div>
+        <div class="phase-content">
+          <div class="phase-title">Phase 3 — 4DNFT · Q4 2026</div>
+          <div class="phase-desc">4DNFT minting on Base. ERC-1155 + ERC-2981 royalty routing. Artist early access. On-chain play and share tracking.</div>
+        </div>
+      </div>
+      <div class="phase">
+        <div class="phase-dot upcoming">4</div>
+        <div class="phase-content">
+          <div class="phase-title">Phase 4 — Legal infrastructure</div>
+          <div class="phase-desc">aiOut legal strategy execution. Consent Stack as public utility. Cross-chain bridge. DAO full governance.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="conclusion">
+    <div class="section-num">10 —</div>
+    <h2>Conclusion</h2>
+    <p class="lead">The Consent Stack is not a product. It is infrastructure for a rights movement.</p>
+    <p>The tools exist to build a world where AI participation is always chosen, never assumed. Where creative provenance is immutable. Where identity can be verified without being exposed. The Consent Stack assembles those tools into a coherent, working system.</p>
+    <p>We thought this through.</p>
+    <div class="callout">
+      <p>building by builders · keepAIon.com · your consent. your right.</p>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <a href="https://keepaion.com">keepaion.com</a>
+  <a href="https://aiout.me">aiout.me</a>
+  <a href="https://4dnft.com">4dnft.com</a>
+  <a href="https://x.com/keepaion">𝕏 @keepaion</a>
+  <br /><br />
+  © 2026 keepAIon · building by builders
+</footer>
+
+</body>
+</html>

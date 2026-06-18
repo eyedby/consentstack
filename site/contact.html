@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Contact Your Reps — keepAIon</title>
+  <meta name="description" content="Find and contact your state representatives, senators, and governor about AI consent legislation."/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    :root {
+      --bg:#020f0a; --bg2:#04342C; --bg3:#010a07; --ac:#1D9E75;
+      --li:#5DCAA5; --pa:#9FE1CB; --mi:#0F6E56; --di:#04342C;
+      --nv:rgba(2,15,10,.93);
+    }
+    body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--pa); min-height:100vh; }
+
+    nav { position:fixed; top:0; left:0; right:0; z-index:100; background:var(--nv); backdrop-filter:blur(14px); border-bottom:.5px solid var(--mi); height:56px; display:flex; align-items:center; justify-content:space-between; padding:0 1.5rem; }
+    #nav-logo { font-size:18px; font-weight:500; color:var(--pa); letter-spacing:-.02em; text-decoration:none; }
+    #nav-logo em { color:var(--li); font-style:normal; }
+    .nl { display:flex; gap:1.25rem; align-items:center; }
+    .nl a { font-size:12px; color:var(--li); text-decoration:none; }
+    .nl a:hover { color:var(--pa); }
+    .ncta { background:var(--ac)!important; color:#fff!important; border-radius:6px; padding:7px 16px; font-size:13px; font-weight:500; }
+    @media(max-width:540px){.nl{display:none}}
+
+    .hero { padding:7rem 1.5rem 3rem; text-align:center; position:relative; overflow:hidden; }
+    .glow { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:600px; height:280px; background:radial-gradient(ellipse,var(--ac) 0%,transparent 70%); opacity:.06; pointer-events:none; }
+    .pill { display:inline-block; font-size:11px; font-family:'IBM Plex Mono',monospace; background:var(--bg2); color:var(--li); border:.5px solid var(--mi); border-radius:20px; padding:3px 14px; margin-bottom:1.25rem; letter-spacing:.05em; }
+    .hero h1 { font-size:clamp(36px,8vw,68px); font-weight:500; color:var(--pa); letter-spacing:-.03em; line-height:1.1; margin-bottom:1rem; }
+    .hero h1 em { color:var(--li); font-style:normal; }
+    .hero p { font-size:clamp(14px,2vw,16px); color:var(--li); line-height:1.75; max-width:520px; margin:0 auto; }
+
+    .main { max-width:900px; margin:0 auto; padding:2rem 1.5rem 5rem; }
+
+    .selector-wrap { background:var(--bg2); border:.5px solid var(--mi); border-radius:16px; padding:1.75rem; margin-bottom:2rem; }
+    .selector-label { font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--mi); letter-spacing:.1em; text-transform:uppercase; margin-bottom:.75rem; }
+    .state-select { width:100%; padding:13px 16px; background:var(--bg3); border:.5px solid var(--mi); border-radius:10px; font-size:15px; color:var(--pa); font-family:'Inter',sans-serif; cursor:pointer; appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235DCAA5' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 16px center; padding-right:40px; }
+    .state-select:focus { outline:none; border-color:var(--ac); }
+    .state-select option { background:#04342C; color:var(--pa); }
+
+    .results { display:none; animation:fadeIn .3s ease; }
+    .results.visible { display:block; }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+
+    .state-header { font-size:clamp(22px,4vw,32px); font-weight:500; color:var(--pa); letter-spacing:-.02em; margin-bottom:.3rem; }
+    .state-header em { color:var(--li); font-style:normal; }
+    .state-sub { font-size:12px; color:var(--mi); font-family:'IBM Plex Mono',monospace; margin-bottom:1.75rem; }
+
+    .officials { display:grid; grid-template-columns:repeat(auto-fit,minmax(255px,1fr)); gap:12px; margin-bottom:1.5rem; }
+    .official-card { background:var(--bg2); border:.5px solid var(--mi); border-radius:14px; padding:1.4rem; transition:border-color .15s; }
+    .official-card:hover { border-color:var(--ac); }
+    .oc-role { font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--ac); letter-spacing:.08em; text-transform:uppercase; margin-bottom:.5rem; }
+    .oc-name { font-size:16px; font-weight:500; color:var(--pa); margin-bottom:.2rem; }
+    .oc-party { font-size:11px; color:var(--mi); margin-bottom:1rem; font-family:'IBM Plex Mono',monospace; }
+    .oc-contacts { display:flex; flex-direction:column; gap:7px; }
+    .oc-link { display:flex; align-items:center; gap:9px; font-size:12px; color:var(--li); text-decoration:none; padding:8px 11px; background:var(--bg3); border-radius:7px; border:.5px solid transparent; transition:border-color .12s,color .12s; }
+    .oc-link:hover { border-color:var(--mi); color:var(--pa); }
+    .oc-icon { font-size:13px; flex-shrink:0; }
+
+    .talking { background:var(--bg2); border:.5px solid var(--mi); border-radius:14px; padding:1.5rem; }
+    .talking-head { font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--ac); letter-spacing:.08em; text-transform:uppercase; margin-bottom:1.1rem; }
+    .point { display:flex; gap:10px; align-items:flex-start; margin-bottom:.9rem; font-size:13px; color:var(--li); line-height:1.65; }
+    .point:last-child { margin-bottom:0; }
+    .point-num { font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--ac); flex-shrink:0; margin-top:1px; min-width:20px; }
+
+    footer { background:var(--bg2); border-top:.5px solid var(--mi); padding:1.75rem 1.5rem; text-align:center; font-size:12px; color:var(--mi); font-family:'IBM Plex Mono',monospace; }
+    footer a { color:var(--li); text-decoration:none; }
+    footer a:hover { color:var(--pa); }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a id="nav-logo" href="https://keepaion.com">keep<em>AIon</em></a>
+  <div class="nl">
+    <a href="https://keepaion.com">home</a>
+    <a href="https://keepaion.com/whitepaper.html">whitepaper</a>
+    <a href="https://aiout.me">aiOut</a>
+    <a href="https://keepaion.org" class="ncta">contact reps</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="glow"></div>
+  <div class="pill">civic action · keepaion.org</div>
+  <h1>Contact Your <em>Representatives</em></h1>
+  <p>Select your state to find contact info for your U.S. Senators, House Representatives, and Governor — and let them know where you stand on AI consent.</p>
+</div>
+
+<div class="main">
+  <div class="selector-wrap">
+    <div class="selector-label">Select Your State</div>
+    <select class="state-select" id="state-select" onchange="loadState(this.value)">
+      <option value="">— choose a state —</option>
+      <option value="AL">Alabama</option><option value="AK">Alaska</option>
+      <option value="AZ">Arizona</option><option value="AR">Arkansas</option>
+      <option value="CA">California</option><option value="CO">Colorado</option>
+      <option value="CT">Connecticut</option><option value="DE">Delaware</option>
+      <option value="FL">Florida</option><option value="GA">Georgia</option>
+      <option value="HI">Hawaii</option><option value="ID">Idaho</option>
+      <option value="IL">Illinois</option><option value="IN">Indiana</option>
+      <option value="IA">Iowa</option><option value="KS">Kansas</option>
+      <option value="KY">Kentucky</option><option value="LA">Louisiana</option>
+      <option value="ME">Maine</option><option value="MD">Maryland</option>
+      <option value="MA">Massachusetts</option><option value="MI">Michigan</option>
+      <option value="MN">Minnesota</option><option value="MS">Mississippi</option>
+      <option value="MO">Missouri</option><option value="MT">Montana</option>
+      <option value="NE">Nebraska</option><option value="NV">Nevada</option>
+      <option value="NH">New Hampshire</option><option value="NJ">New Jersey</option>
+      <option value="NM">New Mexico</option><option value="NY">New York</option>
+      <option value="NC">North Carolina</option><option value="ND">North Dakota</option>
+      <option value="OH">Ohio</option><option value="OK">Oklahoma</option>
+      <option value="OR">Oregon</option><option value="PA">Pennsylvania</option>
+      <option value="RI">Rhode Island</option><option value="SC">South Carolina</option>
+      <option value="SD">South Dakota</option><option value="TN">Tennessee</option>
+      <option value="TX">Texas</option><option value="UT">Utah</option>
+      <option value="VT">Vermont</option><option value="VA">Virginia</option>
+      <option value="WA">Washington</option><option value="WV">West Virginia</option>
+      <option value="WI">Wisconsin</option><option value="WY">Wyoming</option>
+    </select>
+  </div>
+
+  <div class="results" id="results">
+    <div class="state-header" id="state-header"></div>
+    <div class="state-sub" id="state-sub"></div>
+    <div class="officials" id="officials"></div>
+    <div class="talking">
+      <div class="talking-head">Suggested Talking Points · AI Consent</div>
+      <div class="point"><span class="point-num">01</span><span>I believe no citizen should be subjected to an AI system without their explicit, informed consent. Please support legislation requiring opt-in consent for AI deployment.</span></div>
+      <div class="point"><span class="point-num">02</span><span>AI systems are increasingly used in hiring, lending, healthcare, and law enforcement — affecting people's lives without their knowledge. Transparency and consent must be required.</span></div>
+      <div class="point"><span class="point-num">03</span><span>Children deserve special protection. Any AI system interacting with or analyzing minors should require explicit parental consent and strict data protections.</span></div>
+      <div class="point"><span class="point-num">04</span><span>Please support the creation of a clear federal right to know when AI is being used to make decisions about you, and the right to opt out.</span></div>
+      <div class="point"><span class="point-num">05</span><span>The Consent Stack (keepaion.com) is a citizen-led initiative. We are asking representatives to champion an AI Bill of Rights grounded in informed consent.</span></div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <a href="https://keepaion.com">keepAIon.com</a> · <a href="https://keepaion.org">keepAIon.org</a> · eyedby/consentstack · we thought this through
+</footer>
+
+<script>
+// State data — senators, rep (at-large or first district), governor
+// Phone numbers are official DC/state office numbers
+const STATES = {
+  AL: { name:"Alabama", gov:{name:"Kay Ivey",party:"Republican",role:"Governor",phone:"334-242-7100",web:"https://governor.alabama.gov/contact/",email:""},
+    senators:[{name:"Richard Shelby",party:"Republican",role:"U.S. Senator",phone:"202-224-5744",web:"https://www.shelby.senate.gov/public/index.cfm/contact"},{name:"Tommy Tuberville",party:"Republican",role:"U.S. Senator",phone:"202-224-4124",web:"https://www.tuberville.senate.gov/contact/"}],
+    rep:{name:"Barry Moore",party:"Republican",role:"U.S. Representative (AL-2)",phone:"202-225-2901",web:"https://barry.house.gov/contact"} },
+  AK: { name:"Alaska", gov:{name:"Mike Dunleavy",party:"Republican",role:"Governor",phone:"907-465-3500",web:"https://gov.alaska.gov/contact/"},
+    senators:[{name:"Lisa Murkowski",party:"Republican",role:"U.S. Senator",phone:"202-224-6665",web:"https://www.murkowski.senate.gov/contact"},{name:"Dan Sullivan",party:"Republican",role:"U.S. Senator",phone:"202-224-3004",web:"https://www.sullivan.senate.gov/contact"}],
+    rep:{name:"Mary Peltola",party:"Democrat",role:"U.S. Representative (At-Large)",phone:"202-225-5765",web:"https://peltola.house.gov/contact"} },
+  AZ: { name:"Arizona", gov:{name:"Katie Hobbs",party:"Democrat",role:"Governor",phone:"602-542-4331",web:"https://azgovernor.gov/contact"},
+    senators:[{name:"Mark Kelly",party:"Democrat",role:"U.S. Senator",phone:"202-224-2235",web:"https://www.kelly.senate.gov/contact"},{name:"Kyrsten Sinema",party:"Independent",role:"U.S. Senator",phone:"202-224-4521",web:"https://www.sinema.senate.gov/contact"}],
+    rep:{name:"David Schweikert",party:"Republican",role:"U.S. Representative (AZ-1)",phone:"202-225-2190",web:"https://schweikert.house.gov/contact"} },
+  AR: { name:"Arkansas", gov:{name:"Sarah Huckabee Sanders",party:"Republican",role:"Governor",phone:"501-682-2345",web:"https://governor.arkansas.gov/contact/"},
+    senators:[{name:"John Boozman",party:"Republican",role:"U.S. Senator",phone:"202-224-4843",web:"https://www.boozman.senate.gov/public/index.cfm/contact"},{name:"Tom Cotton",party:"Republican",role:"U.S. Senator",phone:"202-224-2353",web:"https://www.cotton.senate.gov/contact"}],
+    rep:{name:"Rick Crawford",party:"Republican",role:"U.S. Representative (AR-1)",phone:"202-225-4076",web:"https://crawford.house.gov/contact"} },
+  CA: { name:"California", gov:{name:"Gavin Newsom",party:"Democrat",role:"Governor",phone:"916-445-2841",web:"https://www.gov.ca.gov/contact/"},
+    senators:[{name:"Alex Padilla",party:"Democrat",role:"U.S. Senator",phone:"202-224-3553",web:"https://www.padilla.senate.gov/contact"},{name:"Laphonza Butler",party:"Democrat",role:"U.S. Senator",phone:"202-224-3841",web:"https://www.butler.senate.gov/contact"}],
+    rep:{name:"Mike Thompson",party:"Democrat",role:"U.S. Representative (CA-4)",phone:"202-225-3311",web:"https://mikethompson.house.gov/contact"} },
+  CO: { name:"Colorado", gov:{name:"Jared Polis",party:"Democrat",role:"Governor",phone:"303-866-2471",web:"https://www.colorado.gov/governor/contact-governor"},
+    senators:[{name:"Michael Bennet",party:"Democrat",role:"U.S. Senator",phone:"202-224-5852",web:"https://www.bennet.senate.gov/public/index.cfm/contact"},{name:"John Hickenlooper",party:"Democrat",role:"U.S. Senator",phone:"202-224-5941",web:"https://www.hickenlooper.senate.gov/contact"}],
+    rep:{name:"Diana DeGette",party:"Democrat",role:"U.S. Representative (CO-1)",phone:"202-225-4431",web:"https://degette.house.gov/contact"} },
+  CT: { name:"Connecticut", gov:{name:"Ned Lamont",party:"Democrat",role:"Governor",phone:"800-406-1527",web:"https://portal.ct.gov/governorsoffice/content/contact-the-governor"},
+    senators:[{name:"Richard Blumenthal",party:"Democrat",role:"U.S. Senator",phone:"202-224-2823",web:"https://www.blumenthal.senate.gov/contact"},{name:"Chris Murphy",party:"Democrat",role:"U.S. Senator",phone:"202-224-4041",web:"https://www.murphy.senate.gov/contact"}],
+    rep:{name:"John Larson",party:"Democrat",role:"U.S. Representative (CT-1)",phone:"202-225-2265",web:"https://larson.house.gov/contact"} },
+  DE: { name:"Delaware", gov:{name:"John Carney",party:"Democrat",role:"Governor",phone:"302-744-4101",web:"https://governor.delaware.gov/contact/"},
+    senators:[{name:"Tom Carper",party:"Democrat",role:"U.S. Senator",phone:"202-224-2441",web:"https://www.carper.senate.gov/contact"},{name:"Chris Coons",party:"Democrat",role:"U.S. Senator",phone:"202-224-5042",web:"https://www.coons.senate.gov/contact"}],
+    rep:{name:"Lisa Blunt Rochester",party:"Democrat",role:"U.S. Representative (At-Large)",phone:"202-225-4165",web:"https://bluntrochester.house.gov/contact"} },
+  FL: { name:"Florida", gov:{name:"Ron DeSantis",party:"Republican",role:"Governor",phone:"850-488-7146",web:"https://www.flgov.com/contact-governor/"},
+    senators:[{name:"Marco Rubio",party:"Republican",role:"U.S. Senator",phone:"202-224-3041",web:"https://www.rubio.senate.gov/contact"},{name:"Rick Scott",party:"Republican",role:"U.S. Senator",phone:"202-224-5274",web:"https://www.rickscott.senate.gov/contact"}],
+    rep:{name:"Matt Gaetz",party:"Republican",role:"U.S. Representative (FL-1)",phone:"202-225-4136",web:"https://gaetz.house.gov/contact"} },
+  GA: { name:"Georgia", gov:{name:"Brian Kemp",party:"Republican",role:"Governor",phone:"404-656-1776",web:"https://gov.georgia.gov/contact-governors-office"},
+    senators:[{name:"Jon Ossoff",party:"Democrat",role:"U.S. Senator",phone:"202-224-3521",web:"https://www.ossoff.senate.gov/contact"},{name:"Raphael Warnock",party:"Democrat",role:"U.S. Senator",phone:"202-224-3643",web:"https://www.warnock.senate.gov/contact"}],
+    rep:{name:"Buddy Carter",party:"Republican",role:"U.S. Representative (GA-1)",phone:"202-225-5831",web:"https://buddycarter.house.gov/contact"} },
+  HI: { name:"Hawaii", gov:{name:"Josh Green",party:"Democrat",role:"Governor",phone:"808-586-0034",web:"https://governor.hawaii.gov/contact/"},
+    senators:[{name:"Brian Schatz",party:"Democrat",role:"U.S. Senator",phone:"202-224-3934",web:"https://www.schatz.senate.gov/contact"},{name:"Mazie Hirono",party:"Democrat",role:"U.S. Senator",phone:"202-224-6361",web:"https://www.hirono.senate.gov/contact"}],
+    rep:{name:"Ed Case",party:"Democrat",role:"U.S. Representative (HI-1)",phone:"202-225-2726",web:"https://case.house.gov/contact"} },
+  ID: { name:"Idaho", gov:{name:"Brad Little",party:"Republican",role:"Governor",phone:"208-334-2100",web:"https://gov.idaho.gov/contact/"},
+    senators:[{name:"Mike Crapo",party:"Republican",role:"U.S. Senator",phone:"202-224-6142",web:"https://www.crapo.senate.gov/contact"},{name:"Jim Risch",party:"Republican",role:"U.S. Senator",phone:"202-224-2752",web:"https://www.risch.senate.gov/public/index.cfm/contact"}],
+    rep:{name:"Russ Fulcher",party:"Republican",role:"U.S. Representative (ID-1)",phone:"202-225-6611",web:"https://fulcher.house.gov/contact"} },
+  IL: { name:"Illinois", gov:{name:"JB Pritzker",party:"Democrat",role:"Governor",phone:"217-782-0244",web:"https://gov.illinois.gov/contact"},
+    senators:[{name:"Dick Durbin",party:"Democrat",role:"U.S. Senator",phone:"202-224-2152",web:"https://www.durbin.senate.gov/contact"},{name:"Tammy Duckworth",party:"Democrat",role:"U.S. Senator",phone:"202-224-2854",web:"https://www.duckworth.senate.gov/contact"}],
+    rep:{name:"Jonathan Jackson",party:"Democrat",role:"U.S. Representative (IL-1)",phone:"202-225-4372",web:"https://jonathanljackson.house.gov/contact"} },
+  IN: { name:"Indiana", gov:{name:"Eric Holcomb",party:"Republican",role:"Governor",phone:"317-232-4567",web:"https://www.in.gov/gov/contact-the-governor/"},
+    senators:[{name:"Todd Young",party:"Republican",role:"U.S. Senator",phone:"202-224-5623",web:"https://www.young.senate.gov/contact"},{name:"Mike Braun",party:"Republican",role:"U.S. Senator",phone:"202-224-4814",web:"https://www.braun.senate.gov/contact"}],
+    rep:{name:"Frank Mrvan",party:"Democrat",role:"U.S. Representative (IN-1)",phone:"202-225-2461",web:"https://mrvan.house.gov/contact"} },
+  IA: { name:"Iowa", gov:{name:"Kim Reynolds",party:"Republican",role:"Governor",phone:"515-281-5211",web:"https://governor.iowa.gov/contact"},
+    senators:[{name:"Chuck Grassley",party:"Republican",role:"U.S. Senator",phone:"202-224-3744",web:"https://www.grassley.senate.gov/contact"},{name:"Joni Ernst",party:"Republican",role:"U.S. Senator",phone:"202-224-3254",web:"https://www.ernst.senate.gov/contact"}],
+    rep:{name:"Mariannette Miller-Meeks",party:"Republican",role:"U.S. Representative (IA-1)",phone:"202-225-6576",web:"https://miller-meeks.house.gov/contact"} },
+  KS: { name:"Kansas", gov:{name:"Laura Kelly",party:"Democrat",role:"Governor",phone:"785-296-3232",web:"https://governor.kansas.gov/contact-the-governor/"},
+    senators:[{name:"Jerry Moran",party:"Republican",role:"U.S. Senator",phone:"202-224-6521",web:"https://www.moran.senate.gov/public/index.cfm/contact"},{name:"Roger Marshall",party:"Republican",role:"U.S. Senator",phone:"202-224-4774",web:"https://www.marshall.senate.gov/contact"}],
+    rep:{name:"Tracey Mann",party:"Republican",role:"U.S. Representative (KS-1)",phone:"202-225-2715",web:"https://mann.house.gov/contact"} },
+  KY: { name:"Kentucky", gov:{name:"Andy Beshear",party:"Democrat",role:"Governor",phone:"502-564-2611",web:"https://governor.ky.gov/contact/Pages/default.aspx"},
+    senators:[{name:"Mitch McConnell",party:"Republican",role:"U.S. Senator",phone:"202-224-2541",web:"https://www.mcconnell.senate.gov/public/index.cfm/contactform"},{name:"Rand Paul",party:"Republican",role:"U.S. Senator",phone:"202-224-4343",web:"https://www.paul.senate.gov/contact"}],
+    rep:{name:"James Comer",party:"Republican",role:"U.S. Representative (KY-1)",phone:"202-225-3115",web:"https://comer.house.gov/contact"} },
+  LA: { name:"Louisiana", gov:{name:"Jeff Landry",party:"Republican",role:"Governor",phone:"225-342-7015",web:"https://gov.louisiana.gov/index.cfm/contact"},
+    senators:[{name:"Bill Cassidy",party:"Republican",role:"U.S. Senator",phone:"202-224-5824",web:"https://www.cassidy.senate.gov/contact"},{name:"John Kennedy",party:"Republican",role:"U.S. Senator",phone:"202-224-4623",web:"https://www.kennedy.senate.gov/public/index.cfm/contact"}],
+    rep:{name:"Steve Scalise",party:"Republican",role:"U.S. Representative (LA-1)",phone:"202-225-3015",web:"https://scalise.house.gov/contact"} },
+  ME: { name:"Maine", gov:{name:"Janet Mills",party:"Democrat",role:"Governor",phone:"207-287-3531",web:"https://www.maine.gov/governor/mills/contact"},
+    senators:[{name:"Susan Collins",party:"Republican",role:"U.S. Senator",phone:"202-224-2523",web:"https://www.collins.senate.gov/contact"},{name:"Angus King",party:"Independent",role:"U.S. Senator",phone:"202-224-5344",web:"https://www.king.senate.gov/contact"}],
+    rep:{name:"Chellie Pingree",party:"Democrat",role:"U.S. Representative (ME-1)",phone:"202-225-6116",web:"https://pingree.house.gov/contact"} },
+  MD: { name:"Maryland", gov:{name:"Wes Moore",party:"Democrat",role:"Governor",phone:"410-974-3901",web:"https://governor.maryland.gov/pages/contact.aspx"},
+    senators:[{name:"Ben Cardin",party:"Democrat",role:"U.S. Senator",phone:"202-224-4524",web:"https://www.cardin.senate.gov/contact"},{name:"Chris Van Hollen",party:"Democrat",role:"U.S. Senator",phone:"202-224-4654",web:"https://www.vanhollen.senate.gov/contact"}],
+    rep:{name:"Andy Harris",party:"Republican",role:"U.S. Representative (MD-1)",phone:"202-225-5311",web:"https://harris.house.gov/contact"} },
+  MA: { name:"Massachusetts", gov:{name:"Maura Healey",party:"Democrat",role:"Governor",phone:"617-725-4005",web:"https://www.mass.gov/contact-the-governors-office"},
+    senators:[{name:"Elizabeth Warren",party:"Democrat",role:"U.S. Senator",phone:"202-224-4543",web:"https://www.warren.senate.gov/contact"},{name:"Ed Markey",party:"Democrat",role:"U.S. Senator",phone:"202-224-2742",web:"https://www.markey.senate.gov/contact"}],
+    rep:{name:"Richard Neal",party:"Democrat",role:"U.S. Representative (MA-1)",phone:"202-225-5601",web:"https://neal.house.gov/contact"} },
+  MI: { name:"Michigan", gov:{name:"Gretchen Whitmer",party:"Democrat",role:"Governor",phone:"517-373-3400",web:"https://www.michigan.gov/whitmer/contact"},
+    senators:[{name:"Debbie Stabenow",party:"Democrat",role:"U.S. Senator",phone:"202-224-4822",web:"https://www.stabenow.senate.gov/contact"},{name:"Gary Peters",party:"Democrat",role:"U.S. Senator",phone:"202-224-6221",web:"https://www.peters.senate.gov/contact"}],
+    rep:{name:"Jack Bergman",party:"Republican",role:"U.S. Representative (MI-1)",phone:"202-225-4735",web:"https://bergman.house.gov/contact"} },
+  MN: { name:"Minnesota", gov:{name:"Tim Walz",party:"Democrat",role:"Governor",phone:"651-201-3400",web:"https://mn.gov/governor/contact/"},
+    senators:[{name:"Amy Klobuchar",party:"Democrat",role:"U.S. Senator",phone:"202-224-3244",web:"https://www.klobuchar.senate.gov/public/index.cfm/contact"},{name:"Tina Smith",party:"Democrat",role:"U.S. Senator",phone:"202-224-5641",web:"https://www.smith.senate.gov/contact"}],
+    rep:{name:"Brad Finstad",party:"Republican",role:"U.S. Representative (MN-1)",phone:"202-225-2472",web:"https://finstad.house.gov/contact"} },
+  MS: { name:"Mississippi", gov:{name:"Tate Reeves",party:"Republican",role:"Governor",phone:"601-359-3150",web:"https://governorreeves.ms.gov/contact/"},
+    senators:[{name:"Roger Wicker",party:"Republican",role:"U.S. Senator",phone:"202-224-6253",web:"https://www.wicker.senate.gov/contact"},{name:"Cindy Hyde-Smith",party:"Republican",role:"U.S. Senator",phone:"202-224-5054",web:"https://www.hydesmith.senate.gov/contact"}],
+    rep:{name:"Trent Kelly",party:"Republican",role:"U.S. Representative (MS-1)",phone:"202-225-4306",web:"https://trentkelly.house.gov/contact"} },
+  MO: { name:"Missouri", gov:{name:"Mike Parson",party:"Republican",role:"Governor",phone:"573-751-3222",web:"https://governor.mo.gov/contact"},
+    senators:[{name:"Josh Hawley",party:"Republican",role:"U.S. Senator",phone:"202-224-6154",web:"https://www.hawley.senate.gov/contact"},{name:"Eric Schmitt",party:"Republican",role:"U.S. Senator",phone:"202-224-5721",web:"https://www.schmitt.senate.gov/contact"}],
+    rep:{name:"Cori Bush",party:"Democrat",role:"U.S. Representative (MO-1)",phone:"202-225-2406",web:"https://bush.house.gov/contact"} },
+  MT: { name:"Montana", gov:{name:"Greg Gianforte",party:"Republican",role:"Governor",phone:"406-444-3111",web:"https://governor.mt.gov/contact"},
+    senators:[{name:"Jon Tester",party:"Democrat",role:"U.S. Senator",phone:"202-224-2644",web:"https://www.tester.senate.gov/contact"},{name:"Steve Daines",party:"Republican",role:"U.S. Senator",phone:"202-224-2651",web:"https://www.daines.senate.gov/connect/contact"}],
+    rep:{name:"Ryan Zinke",party:"Republican",role:"U.S. Representative (MT-1)",phone:"202-225-5628",web:"https://zinke.house.gov/contact"} },
+  NE: { name:"Nebraska", gov:{name:"Jim Pillen",party:"Republican",role:"Governor",phone:"402-471-2244",web:"https://governor.nebraska.gov/contact"},
+    senators:[{name:"Deb Fischer",party:"Republican",role:"U.S. Senator",phone:"202-224-6551",web:"https://www.fischer.senate.gov/public/index.cfm/contact"},{name:"Pete Ricketts",party:"Republican",role:"U.S. Senator",phone:"202-224-4224",web:"https://www.ricketts.senate.gov/contact"}],
+    rep:{name:"Mike Flood",party:"Republican",role:"U.S. Representative (NE-1)",phone:"202-225-4806",web:"https://flood.house.gov/contact"} },
+  NV: { name:"Nevada", gov:{name:"Joe Lombardo",party:"Republican",role:"Governor",phone:"775-684-5670",web:"https://gov.nv.gov/Boards/Governors_Office/Contact/"},
+    senators:[{name:"Catherine Cortez Masto",party:"Democrat",role:"U.S. Senator",phone:"202-224-3542",web:"https://www.cortezmasto.senate.gov/contact"},{name:"Jacky Rosen",party:"Democrat",role:"U.S. Senator",phone:"202-224-6244",web:"https://www.rosen.senate.gov/contact"}],
+    rep:{name:"Dina Titus",party:"Democrat",role:"U.S. Representative (NV-1)",phone:"202-225-5965",web:"https://titus.house.gov/contact"} },
+  NH: { name:"New Hampshire", gov:{name:"Chris Sununu",party:"Republican",role:"Governor",phone:"603-271-2121",web:"https://www.governor.nh.gov/contact"},
+    senators:[{name:"Jeanne Shaheen",party:"Democrat",role:"U.S. Senator",phone:"202-224-2841",web:"https://www.shaheen.senate.gov/contact"},{name:"Maggie Hassan",party:"Democrat",role:"U.S. Senator",phone:"202-224-3324",web:"https://www.hassan.senate.gov/contact"}],
+    rep:{name:"Chris Pappas",party:"Democrat",role:"U.S. Representative (NH-1)",phone:"202-225-5456",web:"https://pappas.house.gov/contact"} },
+  NJ: { name:"New Jersey", gov:{name:"Phil Murphy",party:"Democrat",role:"Governor",phone:"609-292-6000",web:"https://www.nj.gov/governor/admin/contact.shtml"},
+    senators:[{name:"Bob Menendez",party:"Democrat",role:"U.S. Senator",phone:"202-224-4744",web:"https://www.menendez.senate.gov/contact"},{name:"Cory Booker",party:"Democrat",role:"U.S. Senator",phone:"202-224-3224",web:"https://www.booker.senate.gov/contact"}],
+    rep:{name:"Donald Norcross",party:"Democrat",role:"U.S. Representative (NJ-1)",phone:"202-225-6501",web:"https://norcross.house.gov/contact"} },
+  NM: { name:"New Mexico", gov:{name:"Michelle Lujan Grisham",party:"Democrat",role:"Governor",phone:"505-476-2200",web:"https://www.governor.state.nm.us/contact-the-governor/"},
+    senators:[{name:"Martin Heinrich",party:"Democrat",role:"U.S. Senator",phone:"202-224-5521",web:"https://www.heinrich.senate.gov/contact"},{name:"Ben Ray Luján",party:"Democrat",role:"U.S. Senator",phone:"202-224-6621",web:"https://www.lujan.senate.gov/contact"}],
+    rep:{name:"Melanie Stansbury",party:"Democrat",role:"U.S. Representative (NM-1)",phone:"202-225-6316",web:"https://stansbury.house.gov/contact"} },
+  NY: { name:"New York", gov:{name:"Kathy Hochul",party:"Democrat",role:"Governor",phone:"518-474-8390",web:"https://www.governor.ny.gov/contact-governor"},
+    senators:[{name:"Chuck Schumer",party:"Democrat",role:"U.S. Senator",phone:"202-224-6542",web:"https://www.schumer.senate.gov/contact"},{name:"Kirsten Gillibrand",party:"Democrat",role:"U.S. Senator",phone:"202-224-4451",web:"https://www.gillibrand.senate.gov/contact"}],
+    rep:{name:"Nick LaLota",party:"Republican",role:"U.S. Representative (NY-1)",phone:"202-225-3826",web:"https://lalota.house.gov/contact"} },
+  NC: { name:"North Carolina", gov:{name:"Roy Cooper",party:"Democrat",role:"Governor",phone:"919-814-2000",web:"https://governor.nc.gov/contact"},
+    senators:[{name:"Thom Tillis",party:"Republican",role:"U.S. Senator",phone:"202-224-6342",web:"https://www.tillis.senate.gov/contact"},{name:"Ted Budd",party:"Republican",role:"U.S. Senator",phone:"202-224-3154",web:"https://www.budd.senate.gov/contact"}],
+    rep:{name:"Tim Moore",party:"Republican",role:"U.S. Representative (NC-6)",phone:"202-225-1976",web:"https://timmoore.house.gov/contact"} },
+  ND: { name:"North Dakota", gov:{name:"Doug Burgum",party:"Republican",role:"Governor",phone:"701-328-2200",web:"https://www.governor.nd.gov/contact"},
+    senators:[{name:"John Hoeven",party:"Republican",role:"U.S. Senator",phone:"202-224-2551",web:"https://www.hoeven.senate.gov/contact"},{name:"Kevin Cramer",party:"Republican",role:"U.S. Senator",phone:"202-224-2043",web:"https://www.cramer.senate.gov/contact"}],
+    rep:{name:"Kelly Armstrong",party:"Republican",role:"U.S. Representative (At-Large)",phone:"202-225-2611",web:"https://armstrong.house.gov/contact"} },
+  OH: { name:"Ohio", gov:{name:"Mike DeWine",party:"Republican",role:"Governor",phone:"614-466-3555",web:"https://governor.ohio.gov/about/contact"},
+    senators:[{name:"Sherrod Brown",party:"Democrat",role:"U.S. Senator",phone:"202-224-2315",web:"https://www.brown.senate.gov/contact"},{name:"JD Vance",party:"Republican",role:"U.S. Senator",phone:"202-224-3353",web:"https://www.vance.senate.gov/contact"}],
+    rep:{name:"Steve Chabot",party:"Republican",role:"U.S. Representative (OH-1)",phone:"202-225-2216",web:"https://chabot.house.gov/contact"} },
+  OK: { name:"Oklahoma", gov:{name:"Kevin Stitt",party:"Republican",role:"Governor",phone:"405-521-2342",web:"https://www.governor.ok.gov/contact"},
+    senators:[{name:"James Lankford",party:"Republican",role:"U.S. Senator",phone:"202-224-5754",web:"https://www.lankford.senate.gov/contact"},{name:"Markwayne Mullin",party:"Republican",role:"U.S. Senator",phone:"202-224-4721",web:"https://www.mullin.senate.gov/contact"}],
+    rep:{name:"Kevin Hern",party:"Republican",role:"U.S. Representative (OK-1)",phone:"202-225-2211",web:"https://hern.house.gov/contact"} },
+  OR: { name:"Oregon", gov:{name:"Tina Kotek",party:"Democrat",role:"Governor",phone:"503-378-4582",web:"https://www.oregon.gov/gov/pages/contact.aspx"},
+    senators:[{name:"Ron Wyden",party:"Democrat",role:"U.S. Senator",phone:"202-224-5244",web:"https://www.wyden.senate.gov/contact"},{name:"Jeff Merkley",party:"Democrat",role:"U.S. Senator",phone:"202-224-3753",web:"https://www.merkley.senate.gov/contact"}],
+    rep:{name:"Suzanne Bonamici",party:"Democrat",role:"U.S. Representative (OR-1)",phone:"202-225-0855",web:"https://bonamici.house.gov/contact"} },
+  PA: { name:"Pennsylvania", gov:{name:"Josh Shapiro",party:"Democrat",role:"Governor",phone:"717-787-2500",web:"https://www.governor.pa.gov/contact/"},
+    senators:[{name:"Bob Casey",party:"Democrat",role:"U.S. Senator",phone:"202-224-6324",web:"https://www.casey.senate.gov/contact"},{name:"John Fetterman",party:"Democrat",role:"U.S. Senator",phone:"202-224-4254",web:"https://www.fetterman.senate.gov/contact"}],
+    rep:{name:"Brian Fitzpatrick",party:"Republican",role:"U.S. Representative (PA-1)",phone:"202-225-4276",web:"https://fitzpatrick.house.gov/contact"} },
+  RI: { name:"Rhode Island", gov:{name:"Dan McKee",party:"Democrat",role:"Governor",phone:"401-222-2080",web:"https://governor.ri.gov/contact"},
+    senators:[{name:"Jack Reed",party:"Democrat",role:"U.S. Senator",phone:"202-224-4642",web:"https://www.reed.senate.gov/contact"},{name:"Sheldon Whitehouse",party:"Democrat",role:"U.S. Senator",phone:"202-224-2921",web:"https://www.whitehouse.senate.gov/contact"}],
+    rep:{name:"Gabe Amo",party:"Democrat",role:"U.S. Representative (RI-1)",phone:"202-225-4911",web:"https://amo.house.gov/contact"} },
+  SC: { name:"South Carolina", gov:{name:"Henry McMaster",party:"Republican",role:"Governor",phone:"803-734-2100",web:"https://governor.sc.gov/contact"},
+    senators:[{name:"Lindsey Graham",party:"Republican",role:"U.S. Senator",phone:"202-224-5972",web:"https://www.lgraham.senate.gov/public/index.cfm/contact"},{name:"Tim Scott",party:"Republican",role:"U.S. Senator",phone:"202-224-6121",web:"https://www.scott.senate.gov/contact"}],
+    rep:{name:"Nancy Mace",party:"Republican",role:"U.S. Representative (SC-1)",phone:"202-225-3176",web:"https://mace.house.gov/contact"} },
+  SD: { name:"South Dakota", gov:{name:"Kristi Noem",party:"Republican",role:"Governor",phone:"605-773-3212",web:"https://sdgov.gov/contact/"},
+    senators:[{name:"John Thune",party:"Republican",role:"U.S. Senator",phone:"202-224-2321",web:"https://www.thune.senate.gov/public/index.cfm/contact"},{name:"Mike Rounds",party:"Republican",role:"U.S. Senator",phone:"202-224-5842",web:"https://www.rounds.senate.gov/contact"}],
+    rep:{name:"Dusty Johnson",party:"Republican",role:"U.S. Representative (At-Large)",phone:"202-225-2801",web:"https://dustyjohnson.house.gov/contact"} },
+  TN: { name:"Tennessee", gov:{name:"Bill Lee",party:"Republican",role:"Governor",phone:"615-741-2001",web:"https://www.tn.gov/governor/contact.html"},
+    senators:[{name:"Marsha Blackburn",party:"Republican",role:"U.S. Senator",phone:"202-224-3344",web:"https://www.blackburn.senate.gov/contact"},{name:"Bill Hagerty",party:"Republican",role:"U.S. Senator",phone:"202-224-4944",web:"https://www.hagerty.senate.gov/contact"}],
+    rep:{name:"Diana Harshbarger",party:"Republican",role:"U.S. Representative (TN-1)",phone:"202-225-6356",web:"https://harshbarger.house.gov/contact"} },
+  TX: { name:"Texas", gov:{name:"Greg Abbott",party:"Republican",role:"Governor",phone:"512-463-2000",web:"https://gov.texas.gov/contact"},
+    senators:[{name:"John Cornyn",party:"Republican",role:"U.S. Senator",phone:"202-224-2934",web:"https://www.cornyn.senate.gov/contact"},{name:"Ted Cruz",party:"Republican",role:"U.S. Senator",phone:"202-224-5922",web:"https://www.cruz.senate.gov/contact"}],
+    rep:{name:"Louie Gohmert",party:"Republican",role:"U.S. Representative (TX-1)",phone:"202-225-3035",web:"https://gohmert.house.gov/contact"} },
+  UT: { name:"Utah", gov:{name:"Spencer Cox",party:"Republican",role:"Governor",phone:"801-538-1000",web:"https://governor.utah.gov/contact/"},
+    senators:[{name:"Mike Lee",party:"Republican",role:"U.S. Senator",phone:"202-224-5444",web:"https://www.lee.senate.gov/contact"},{name:"Mitt Romney",party:"Republican",role:"U.S. Senator",phone:"202-224-5251",web:"https://www.romney.senate.gov/contact"}],
+    rep:{name:"Blake Moore",party:"Republican",role:"U.S. Representative (UT-1)",phone:"202-225-0453",web:"https://blakemoore.house.gov/contact"} },
+  VT: { name:"Vermont", gov:{name:"Phil Scott",party:"Republican",role:"Governor",phone:"802-828-3333",web:"https://governor.vermont.gov/contact"},
+    senators:[{name:"Bernie Sanders",party:"Independent",role:"U.S. Senator",phone:"202-224-5141",web:"https://www.sanders.senate.gov/contact"},{name:"Peter Welch",party:"Democrat",role:"U.S. Senator",phone:"202-224-4242",web:"https://www.welch.senate.gov/contact"}],
+    rep:{name:"Becca Balint",party:"Democrat",role:"U.S. Representative (At-Large)",phone:"202-225-4115",web:"https://balint.house.gov/contact"} },
+  VA: { name:"Virginia", gov:{name:"Glenn Youngkin",party:"Republican",role:"Governor",phone:"804-786-2211",web:"https://www.governor.virginia.gov/contact-us/"},
+    senators:[{name:"Mark Warner",party:"Democrat",role:"U.S. Senator",phone:"202-224-2023",web:"https://www.warner.senate.gov/public/index.cfm/contact"},{name:"Tim Kaine",party:"Democrat",role:"U.S. Senator",phone:"202-224-4024",web:"https://www.kaine.senate.gov/contact"}],
+    rep:{name:"Rob Wittman",party:"Republican",role:"U.S. Representative (VA-1)",phone:"202-225-4261",web:"https://wittman.house.gov/contact"} },
+  WA: { name:"Washington", gov:{name:"Jay Inslee",party:"Democrat",role:"Governor",phone:"360-902-4111",web:"https://www.governor.wa.gov/contact"},
+    senators:[{name:"Patty Murray",party:"Democrat",role:"U.S. Senator",phone:"202-224-2621",web:"https://www.murray.senate.gov/contact"},{name:"Maria Cantwell",party:"Democrat",role:"U.S. Senator",phone:"202-224-3441",web:"https://www.cantwell.senate.gov/contact"}],
+    rep:{name:"Suzan DelBene",party:"Democrat",role:"U.S. Representative (WA-1)",phone:"202-225-6311",web:"https://delbene.house.gov/contact"} },
+  WV: { name:"West Virginia", gov:{name:"Jim Justice",party:"Republican",role:"Governor",phone:"304-558-2000",web:"https://governor.wv.gov/Pages/contactus.aspx"},
+    senators:[{name:"Joe Manchin",party:"Democrat",role:"U.S. Senator",phone:"202-224-3954",web:"https://www.manchin.senate.gov/contact"},{name:"Shelley Moore Capito",party:"Republican",role:"U.S. Senator",phone:"202-224-6472",web:"https://www.capito.senate.gov/contact"}],
+    rep:{name:"Carol Miller",party:"Republican",role:"U.S. Representative (WV-1)",phone:"202-225-3452",web:"https://carol.house.gov/contact"} },
+  WI: { name:"Wisconsin", gov:{name:"Tony Evers",party:"Democrat",role:"Governor",phone:"608-266-1212",web:"https://evers.wi.gov/pages/contact.aspx"},
+    senators:[{name:"Tammy Baldwin",party:"Democrat",role:"U.S. Senator",phone:"202-224-5653",web:"https://www.baldwin.senate.gov/contact"},{name:"Ron Johnson",party:"Republican",role:"U.S. Senator",phone:"202-224-5323",web:"https://www.ronjohnson.senate.gov/contact"}],
+    rep:{name:"Bryan Steil",party:"Republican",role:"U.S. Representative (WI-1)",phone:"202-225-3031",web:"https://steil.house.gov/contact"} },
+  WY: { name:"Wyoming", gov:{name:"Mark Gordon",party:"Republican",role:"Governor",phone:"307-777-7434",web:"https://governor.wyo.gov/contact"},
+    senators:[{name:"John Barrasso",party:"Republican",role:"U.S. Senator",phone:"202-224-6441",web:"https://www.barrasso.senate.gov/public/index.cfm/contact"},{name:"Cynthia Lummis",party:"Republican",role:"U.S. Senator",phone:"202-224-3424",web:"https://www.lummis.senate.gov/contact"}],
+    rep:{name:"Harriet Hageman",party:"Republican",role:"U.S. Representative (At-Large)",phone:"202-225-2311",web:"https://hageman.house.gov/contact"} },
+};
+
+function partyColor(party) {
+  if (party === 'Democrat') return '#4A90D9';
+  if (party === 'Republican') return '#E05A3A';
+  return '#8B8B8B';
+}
+
+function officialCard(o) {
+  return `<div class="official-card">
+    <div class="oc-role">${o.role}</div>
+    <div class="oc-name">${o.name}</div>
+    <div class="oc-party" style="color:${partyColor(o.party)}">${o.party}</div>
+    <div class="oc-contacts">
+      <a class="oc-link" href="tel:${o.phone}">
+        <span class="oc-icon">📞</span>
+        <span class="oc-phone">${o.phone}</span>
+      </a>
+      <a class="oc-link" href="${o.web}" target="_blank" rel="noopener">
+        <span class="oc-icon">🌐</span>
+        <span>Contact Form / Website</span>
+      </a>
+    </div>
+  </div>`;
+}
+
+function loadState(code) {
+  const results = document.getElementById('results');
+  if (!code) { results.classList.remove('visible'); return; }
+  const s = STATES[code];
+  if (!s) return;
+  document.getElementById('state-header').innerHTML = `<em>${s.name}</em> — Your Representatives`;
+  document.getElementById('state-sub').textContent = `2 U.S. Senators · 1 U.S. Representative · Governor`;
+  const officials = document.getElementById('officials');
+  officials.innerHTML =
+    officialCard(s.gov) +
+    s.senators.map(officialCard).join('') +
+    officialCard(s.rep);
+  results.classList.remove('visible');
+  void results.offsetWidth; // force reflow for animation
+  results.classList.add('visible');
+  results.scrollIntoView({behavior:'smooth', block:'start'});
+}
+</script>
+</body>
+</html>
