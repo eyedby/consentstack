@@ -1,0 +1,25 @@
+// 5. Consensus & Consent Stack Infrastructure APIs
+app.post('/api/proofs/register', async (req, res) => {
+  const { githubUsername, passphrase } = req.body;
+  
+  // Extract real client IP (prioritizing cloud edge headers over standard express fallbacks)
+  const clientIP = req.headers['x-forwarded-for']?.split(',')[0] || req.ip;
+
+  try {
+    // This executes your 18-month check, 24h IP window, and zero-knowledge identity swap
+    const proof = await verifyAndGenerateProof(githubUsername, passphrase, clientIP);
+    
+    console.log(`[Consent Stack] Appended anonymous commitment: ${proof.commitment.slice(0, 8)}...`);
+    
+    return res.status(201).json({ 
+      success: true, 
+      proof
+    });
+  } catch (err) {
+    // If rate limits or age checks fail, return the error to poem.html seamlessly
+    return res.status(400).json({ 
+      success: false, 
+      error: err.message 
+    });
+  }
+});
