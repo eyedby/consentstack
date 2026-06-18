@@ -1,0 +1,5 @@
+node_modules/
+key.txt
+.env
+.DS_Store
+pm-debug.log
