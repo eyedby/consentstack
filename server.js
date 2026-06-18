@@ -79,12 +79,12 @@ app.post('/api/proofs/register', async (req, res) => {
 });
 
 // 6. Native Fallbacks for Decentralized Apps & Dashboards
-app.get('/dashboard/*', (req, res) => res.sendFile(path.join(__dirname, 'dashboard', 'index.html')));
-app.get('/amok/*', (req, res) => res.sendFile(path.join(__dirname, 'amok', 'index.html')));
-app.get('/4dnft/*', (req, res) => res.sendFile(path.join(__dirname, '4dnft', 'index.html')));
+app.get('/dashboard/*splatsplat', (req, res) => res.sendFile(path.join(__dirname, 'dashboard', 'index.html')));
+app.get('/amok/*splatsplatsplat', (req, res) => res.sendFile(path.join(__dirname, 'amok', 'index.html')));
+app.get('/4dnft/*splat', (req, res) => res.sendFile(path.join(__dirname, '4dnft', 'index.html')));
 
 // Root wildcard catch-all fallback
-app.get('*', (req, res) => {
+app.get('*splat', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
