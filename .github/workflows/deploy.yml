@@ -21,7 +21,10 @@ jobs:
           port:      22
           script: |
             set -e
-            cd ~/consentstack 2>/dev/null || git clone https://github.com/eyedby/consentstack.git ~/consentstack
+            if [ ! -d "~/consentstack/.git" ]; then
+              rm -rf ~/consentstack
+              git clone https://github.com/eyedby/consentstack.git ~/consentstack
+            fi
             cd ~/consentstack
             git fetch origin main
             git reset --hard origin/main
