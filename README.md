@@ -1,32 +1,73 @@
 # Δ9 Consent Stack (Fly-Over-Cloudflare Edition) v0.1
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![Edge Latency](https://img.shields.io/badge/Latency-%E2%89%A4%2010--15ms-00ffcc)](#)
-[![Throughput](https://img.shields.io/badge/Throughput-100k+%20TPS-00ffcc)](#)
+immutable operating systems and infrastructure
 
-> **Enforce human consent at the network interface card before data ever hits application runtime.**
+**"Consent at the wire. Everything else is theater."**
 
-The Δ9 Consent Stack is a low-overhead, completely decoupled infrastructure framework engineered to protect digital sovereignty against unchecked automated extraction and AI scrapers. By pairing microsecond packet-dropping filters in the Linux kernel interface via **XDP/eBPF** with ultra-fast global distribution via **Cloudflare Workers (V8 Isolates)**, the platform handles high-concurrency edge tracking without cloud performance degradation.
+A minimal, hardened, fly-over edge architecture designed to enforce human consent **before** packets reach the operating system network stack.
 
----
-
-## 🛠️ System Architecture & 5G/MEC Routing
-
-The architecture is divided into four strictly isolated segments to maximize high-throughput performance across distributed cell networks and multi-access edge computing (MEC) environments:
-
-*   **Segment 0: 5G Edge Connectivity & Hardware Enforcement** – Executes XDP kernel routines running directly at the radio access network (RAN) interface layer or local MEC nodes (<1μs execution). Local kernel map caches are populated asynchronously via a background ledger daemon to guarantee microsecond packet-dropping without stalling the 5G edge data path.
-*   **Segment 1: Consent Management Layer** – Validates consent states and cryptographic verification tokens via localized sub-ms edge isolates, supporting zero-knowledge identity proofs.
-*   **Segment 2: Client Flexibility Layer** – Houses modular WASM/Rust agents ("The Fly") and adaptive front-end layers (WebAR tracking maps) that stream seamlessly to mobile devices, 5G handsets, or AR glasses.
-*   **Segment 3: Backend Utility Layer** – Manages state proofs and smart contract governance hooks matching the immutable identity standards of the **Δ9 (AMOK)** utility token protocol.
+Built for the age of aggressive AI scraping. No banners. No bullshit. Just enforcement.
 
 ---
 
-## ⚡ Quick Start via Cookiecutter
+## Philosophy
 
-The repository is built as a modular template. You can generate a custom deployment stack in seconds without manually structuring the directories.
+Most "privacy" solutions operate at the application layer — where they are easily ignored, bypassed, or litigated into oblivion.
 
-### 1. Prerequisites
-Ensure you have Python, Cookiecutter, and the Cloudflare Wrangler CLI installed:
+The Consent Stack moves enforcement down to **Segment 0**: the network interface card itself using **XDP/eBPF**. Unauthorized agents are dropped in microseconds. Legitimate traffic proceeds. No negotiation.
+
+This is infrastructure-level digital sovereignty.
+
+---
+
+## Architecture
+
+### Segment 0 — 5G Edge Connectivity & XDP Enforcement (The Kill Switch)
+- XDP programs executing directly in the Linux kernel at NIC ingress
+- Sub-microsecond decisions based on 4DNFT ledger state
+- Immediate drop of scrapers, crawlers, and non-consenting AI agents
+- Compatible with private 5G MEC, bare metal, and Cloudflare Magic Transit/Spectrum
+- The foundation everything else rests on
+
+### Segment 1 — Consent Management Layer
+- Cryptographic gateway runtime
+- Zero-knowledge consent proofs
+- Encrypted non-PII token validation
+- Dynamic policy engine with passive opt-out (aiout.me pattern)
+
+### Segment 2 — Client Flexibility Layer
+- Lightweight "Fly" agent (Rust → WASM)
+- WebAR / holographic rendering interface
+- Adaptive multi-client support
+- Consent-aware UI primitives
+
+### Segment 3 — Backend Utility Layer
+- Distributed ledger integration
+- Immutable consent audit trails
+- Smart contract hooks
+- Token economy primitives
+
+---
+
+## The Fly
+
+A small, autonomous Rust/WASM binary that carries the full consent enforcement logic.  
+Tiny footprint. Can run on routers, edge nodes, Cloudflare Workers, or bare metal.  
+Designed to **fly over** heavy cloud infrastructure while maintaining hard enforcement where you control the edge.
+
+---
+
+## Performance (Design Targets)
+
+- **XDP Drop Latency**: < 1 μs  
+- **End-to-end Latency**: ≤ 10-15 ms on 5G Edge  
+- **Throughput**: 100k+ TPS per node  
+- **Overhead**: Extremely low — built to scale without startup bloat
+
+---
+
+## Quick Start (Cookiecutter)
+
 ```bash
 pip install cookiecutter
-npm install -g wrangler
+cookiecutter https://github.com/eyedby/consentstack.git
