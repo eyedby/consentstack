@@ -3,3 +3,11 @@ key.txt
 .env
 .DS_Store
 pm-debug.log
+# Ignore the compiled computer vision tracking files
+*.mind
+
+# Ignore 3D holographic models and textures
+*.gltf
+*.glb
+*.bin
+assets/models/
